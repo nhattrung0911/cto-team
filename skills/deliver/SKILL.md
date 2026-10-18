@@ -21,7 +21,8 @@ This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-devel
 4. **One owner per file at a time.** Two workers never edit the same file at once.
 5. **Shared resources run one at a time.** A build, the E2E suite, a dev server port, perf tests and a test
    database are shared by every worker in this checkout. Decide who runs them, and when. Usually: workers run only
-   their own unit tests and the typecheck, and the verifier runs the full suite alone.
+   their own unit tests and the typecheck, and the verifier runs the full suite alone. If a worker must build or
+   serve, give it its own port and output folder. Run the full E2E suite once per verification, not per agent.
 6. **State on disk.** Write it in `docs/cto/` so a reset or `/clear` loses nothing (§5).
 7. **Stop and ask the CEO only for these:**
    - a scope change: a feature is infeasible, or the plan contradicts the spec;
@@ -79,7 +80,7 @@ This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-devel
      - Append `G<n> PASS — <one line>` to `ledger.md`, and add the minors to `techdebt.md`.
      - Commit `feat(G<n>): …`.
    - **FAIL:** give the `failing` list to a fresh worker as fixer, using `references/fixer-prompt.md`.
-     Then verify again with a fresh checker (result file `G<n>.r<k>.json`). After two failed fixes, rethink: split
+     Then verify again with a fresh checker, overwriting `G<n>.json` (git keeps the history). After two failed fixes, rethink: split
      the task, re-brief it, or run the last fix on `model: "opus"`.
    - **GAPS:** the report was incomplete; the code was not judged. Run one fresh checker again.
    - **BLOCKED:** read the `reason`.
