@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<!-- cto-team CEO report. The CTO replaces every {{PLACEHOLDER}}; none may remain.
+     Write for a non-technical reader in the CEO's chat language. -->
+<style>
+  :root { --bg:#fbfaf7; --fg:#1d1d1f; --muted:#5f6368; --line:#e3e1dc; --card:#ffffff; --ok:#1b7f4c; --warn:#a15c00; --accent:#2f5bd3; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141416; --fg:#ececee; --muted:#a2a5ab; --line:#2c2d31; --card:#1c1d20; --ok:#4cc38a; --warn:#f0a646; --accent:#7ea2ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.8rem; line-height:1.25; margin: 0 0 8px; }
+  h2 { font-size: 1.15rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .lead { color: var(--muted); font-size: 1.05rem; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  pre, code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .92em; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: .9rem; }
+  .table-wrap { overflow-x: auto; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); }
+  .mermaid { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; }
+  footer { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>{{TITLE}}</h1>
+  <p class="lead">{{SUMMARY}}</p>
+
+  <h2>How to try it</h2>
+  <div class="card">{{HOW_TO_TRY}}</div>
+
+  <h2>What works</h2>
+  <!-- One item per CEO goal: the goal in their words, then what now works, then "verified by: …" in plain words. -->
+  {{WORKS}}
+
+  <h2>Tech stack</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Choice</th><th>Why</th></tr></thead>
+      <tbody>{{STACK_ROWS}}</tbody>
+    </table>
+  </div>
+
+  <h2>How it fits together</h2>
+  <!-- Mermaid flowchart: users, screens/pages, server, database, external services, data flow arrows with labels. -->
+  <pre class="mermaid">
+{{MERMAID}}
+  </pre>
+
+  <h2>Known gaps and tech debt</h2>
+  <!-- Each item: what is missing, what it means for users, how big the fix is. Empty? Say so. -->
+  {{GAPS}}
+
+  <h2>Effort</h2>
+  <p>{{COST}}</p>
+
+  <footer>Delivered with cto-team. Details: docs/cto/ledger.md, docs/cto/results/.</footer>
+</main>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', securityLevel: 'strict' });
+</script>
+</body>
+</html>

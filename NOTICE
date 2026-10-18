@@ -1,0 +1,16 @@
+cto-team
+Copyright (c) 2026 nhattrung0911. Licensed under the MIT License (see LICENSE).
+
+This project adapts ideas and some wording from the following MIT-licensed works:
+
+obra/superpowers (https://github.com/obra/superpowers), Copyright (c) 2025 Jesse Vincent, MIT License.
+  Adapted: the brainstorming interview style (one question at a time, play back understanding,
+  plain-language defaults), the writing-plans header and task format, "never pass session history
+  to subagents", "rulings, not stalls", the progress ledger, the stop list for destructive or external
+  actions, the implementer status contract, verification-before-completion (no claim without fresh
+  evidence), failing-test-first from test-driven-development, root cause before fix from
+  systematic-debugging, and Critical/Important/Minor review triage from requesting-code-review.
+
+olsenbrands/fable-foreman (https://github.com/olsenbrands/fable-foreman), MIT License.
+  Adapted: the blind verifier that sees only the task and acceptance criteria, assumes the work is
+  broken and must reproduce evidence, and the fixed worker report contract.

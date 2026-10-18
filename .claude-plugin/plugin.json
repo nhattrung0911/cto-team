@@ -1,0 +1,9 @@
+{
+  "name": "cto-team",
+  "version": "0.4.0",
+  "description": "Your Claude session becomes a CTO: plans with you once, then delivers gate by gate with 1–5 fresh Sonnet workers (you choose) and an independent verifier, and reports back in plain language.",
+  "author": { "name": "nhattrung0911" },
+  "license": "MIT",
+  "repository": "https://github.com/nhattrung0911/cto-team",
+  "keywords": ["orchestration", "subagents", "workflow", "delivery", "verification"]
+}

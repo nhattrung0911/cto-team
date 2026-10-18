@@ -1,0 +1,15 @@
+{
+  "name": "cto-team",
+  "description": "cto-team: a CTO-style delivery plugin for Claude Code.",
+  "owner": {
+    "name": "nhattrung0911"
+  },
+  "plugins": [
+    {
+      "name": "cto-team",
+      "source": "./",
+      "description": "CEO/CTO delivery: gate-by-gate execution with fresh Sonnet workers, blind verification and a plain-language report.",
+      "version": "0.4.0"
+    }
+  ]
+}
