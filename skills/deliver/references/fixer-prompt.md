@@ -16,7 +16,7 @@ A verifier rejected this gate. You fix exactly the findings in your prompt. You 
 4. Make the smallest fix for that root cause. Stay inside the briefs' allowed files unless the root cause is elsewhere
    (then say so in `concerns`).
 5. Junk findings: delete the listed temporary files.
-6. Run the full test suite from the brief. Read the output.
+6. Run the tests for each finding, then the full test suite from the brief once. Read the output.
 7. Clean up your own temporary files. Do not commit. Do not add new dependencies unless a brief allows it.
 
 ## Return (structured output only)
