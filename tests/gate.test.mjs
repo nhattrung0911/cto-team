@@ -611,3 +611,29 @@ test('v0.4.1: the test command may be wrapped, and the verifier is told to copy 
   assert.equal(byRole(calls, 'verifier').length, 1);
   assert.ok(/exactly as given/.test(byRole(calls, 'verifier')[0].prompt));
 });
+
+test('v0.4.2 small mode: a gate with goals also checks every goal end to end', async () => {
+  const args = baseArgs({ goals: 2, critical: false })
+  const { calls } = await runGate(args, { worker: () => done(), verifier: () => pass() });
+  const v = byRole(calls, 'verifier');
+  assert.ok(v[0].prompt.includes('GOAL#2'));
+  // GOAL#2 missing from the report: a reporting gap, so a fresh verifier is asked, never a fixer.
+  assert.equal(v.length, 2);
+  assert.equal(byRole(calls, 'fixer').length, 0);
+  const all = pass({ criteria: [...pass().criteria, { id: 'GOAL#2', criterion: 'second goal', pass: true, severity: 'Important', evidence: 'flow ok' }] });
+  const ok = await runGate(args, { worker: () => done(), verifier: () => all });
+  assert.equal(ok.result.verdict, 'PASS');
+  assert.equal(byRole(ok.calls, 'verifier').length, 1);
+});
+
+test('v0.4.2 small mode: a gate with goals may run the user tester; a plain gate never does', async () => {
+  const small = await runGate(baseArgs({ goals: 1, userTest: true, critical: false }), { worker: () => done(), verifier: () => pass(), user: () => ({ findings: [] }) });
+  assert.equal(byRole(small.calls, 'user').length, 1);
+  assert.equal(small.result.verdict, 'PASS');
+  const plain = await runGate(baseArgs({ critical: false }), { worker: () => done(), verifier: () => pass() });
+  assert.ok(!byRole(plain.calls, 'verifier')[0].prompt.includes('GOAL#'));
+});
+
+test('v0.4.2 small mode: goals must be a positive count when given', async () => {
+  await assert.rejects(runGate(baseArgs({ goals: 0 }), { worker: () => done(), verifier: () => pass() }), /goals/);
+});

@@ -102,6 +102,9 @@ if (mode === 'review' && (!a.branchBase || !(a.finalBriefs || []).length)) {
 }
 if (mode === 'final' && !(a.finalBriefs || []).length) throw new Error('cto-team gate: final mode needs finalBriefs')
 if (mode === 'final' && !posInt(a.goals)) throw new Error('cto-team gate: final mode needs goals (the number of spec goals, each checked as GOAL#<n>)')
+if (a.goals != null && !posInt(a.goals)) throw new Error('cto-team gate: goals must be a positive count')
+// Small mode (SKILL.md): one gate that also does the final check, so its verifier checks every spec goal too.
+const checkGoals = mode === 'final' || (mode === 'gate' && posInt(a.goals))
 // The verifier's review range: the gate's own base, or the batch/branch base for review and final (never a gate base).
 const rangeBase = mode === 'gate' ? a.gateBase : a.branchBase
 if (!rangeBase) throw new Error(`cto-team gate: ${mode} mode needs a base commit (${mode === 'gate' ? 'gateBase' : 'branchBase'})`)
@@ -251,7 +254,7 @@ const verify = (round, gaps = []) => {
       ...briefs.map((b) => `- ${inRoot(b)}`),
       `Review range: git diff ${rangeBase}..HEAD plus the working tree.`,
       'Give every criterion an id: <task id>#<its number in the brief> (e.g. G2-T1#3). Report the full suite run in `suite` (command, exit code, one-line summary). Run the test command above and put it in `suite.cmd` exactly as given: copy it, add flags only, never shorten or paraphrase it.',
-      mode === 'final' ? `Also check each spec goal (numbered in the spec or in docs/cto/gates.md) end to end and report it as GOAL#1 … GOAL#${a.goals}.` : '',
+      checkGoals ? `Also check each spec goal (numbered in the spec or in docs/cto/gates.md) end to end and report it as GOAL#1 … GOAL#${a.goals}.` : '',
       ...(reviewLines.length ? ['Also report each of these findings as a criterion with its id ([F1], [U1], …): it must now be fixed and covered by a regression test that fails without the fix (no such test = Important failing criterion):', ...reviewLines] : []),
       mutate
         ? 'Run the mutation check (critical gate): pick the file, record `git hash-object <file>` (works for new untracked files too), make one one-line break, run the related test file, then revert only that line by editing it back (never git checkout, git restore or git stash: the workers\' changes are uncommitted), and confirm `git hash-object <file>` matches again.'
@@ -306,9 +309,10 @@ function judge(v) {
     }
   }
   const ids = new Map(v.criteria.filter((c) => c.id).map((c) => [String(c.id).replace(/[\[\]]/g, ''), c]))
-  const expected = mode === 'gate'
-    ? tasks.flatMap((t) => Array.from({ length: t.criteria }, (_, k) => `${t.id}#${k + 1}`))
-    : mode === 'final' ? Array.from({ length: a.goals }, (_, k) => `GOAL#${k + 1}`) : []
+  const expected = [
+    ...(mode === 'gate' ? tasks.flatMap((t) => Array.from({ length: t.criteria }, (_, k) => `${t.id}#${k + 1}`)) : []),
+    ...(checkGoals ? Array.from({ length: a.goals }, (_, k) => `GOAL#${k + 1}`) : []),
+  ]
   for (const id of expected) {
     if (!ids.has(id)) gaps.push(`${id} not checked by the verifier (no criterion with id ${id})`)
   }
@@ -347,7 +351,7 @@ if (mode === 'review') {
   j = { verdict: 'FAIL', failing: reviewFindings.map((f) => ({ criterion: `[${f.id}] ${f.file}: ${f.issue}`, severity: f.severity, evidence: f.evidence })), minor: [] }
 } else {
   await verifyChecked(round)
-  if (mode === 'final' && a.userTest) {
+  if (checkGoals && a.userTest) {
     // A fresh non-technical user tries the main flows; proven problems join the fix rounds.
     phase('User test')
     const ut = await agent(
