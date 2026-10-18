@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2314213d'/%3E%3Cpath d='M9 17l5 5 9-11' stroke='%23f0b33c' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <title>cto-team: plugin Claude Code biến AI coding agent thành CTO giao việc theo từng gate</title>
 <meta name="description" content="cto-team là plugin Claude Code miễn phí cho vibe coding. Đội multi-agent gồm các subagent, có code review, kiểm tra chất lượng test, API contract, tìm kiếm bằng ripgrep và chi phí token thấp, để thứ bạn yêu cầu thật sự được làm xong.">
 <link rel="canonical" href="https://cto-team-skill.pages.dev/vi/">
@@ -32,7 +33,7 @@
   },
   "url": "https://cto-team-skill.pages.dev/vi/",
   "license": "https://opensource.org/licenses/MIT",
-  "softwareVersion": "0.4.0",
+  "softwareVersion": "0.4.1",
   "inLanguage": "vi"
 }
 </script>
@@ -93,7 +94,7 @@ code,.mono{font-family:var(--mono);font-size:.92em}
 .steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:24px}
 .step3{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
 .step3 .n{font:800 1.6rem/1 var(--display);color:var(--amber-text)}
-.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);overflow-x:auto}
+.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
 footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 20px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.node.on{transform:none}}
 </style>
@@ -179,7 +180,7 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
         <p><span class="tag">Trước</span>assert True lọt qua; input quá lớn làm app crash</p>
         <p><span class="tag">Sau</span>Test giả làm gate fail; mọi con số đều có test overflow</p>
         <p class="benefit">Test giả bị chặn ngay ở gate, và mọi con số đều được test overflow.</p>
-        <p class="proof">v0.1 bị crash với số 20 chữ số; đã sửa từ v0.2</p>
+        <p class="proof">v0.1 bị crash với số tiền 20 chữ số; đã sửa từ v0.2</p>
       </article>
       <article class="card">
         <span class="num">06</span>
@@ -195,7 +196,7 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
         <p><span class="tag">Trước</span>Agent “thành viên” sống lâu cứ phình to dần</p>
         <p><span class="tag">Sau</span>Mỗi agent chỉ chạy một lần và bắt đầu nhỏ gọn; Sonnet làm phần lớn việc</p>
         <p class="benefit">Agent nhỏ, chạy một lần giúp chi phí token của bạn thấp.</p>
-        <p class="proof">12k vs 42k start context; 0.9M vs 3.8M token mỗi agent</p>
+        <p class="proof">Context lúc khởi động 12k thay vì 42k; 0.9M thay vì 3.8M token mỗi agent</p>
       </article>
       <article class="card">
         <span class="num">08</span>
@@ -239,7 +240,7 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
   <footer>
     <span>Giấy phép MIT. Ghi công: <a href="https://github.com/obra/superpowers">obra/superpowers</a></span>
     <a href="https://github.com/nhattrung0911/cto-team">Repository</a>
-    <span>Phiên bản 0.4.0</span>
+    <span>Phiên bản 0.4.1</span>
   </footer>
 </div>
 <script>
@@ -247,12 +248,12 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
 var caps=["Bước 1/4. Mỗi worker nhận một brief và các file riêng của mình.","Bước 2/4. Verifier, một agent riêng, kiểm tra từng acceptance criterion.","Bước 3/4. Nếu có gì fail, fixer sửa và verifier kiểm tra lại.","Bước 4/4. Gate đã pass. Đến lúc này gate kế tiếp mới bắt đầu."],L={"pause":"Tạm dừng","play":"Chạy","copied":"Đã copy.","fallback":"Không copy được. Đoạn lệnh đã được chọn sẵn, hãy bấm Ctrl+C."};
 var nodes=[].slice.call(document.querySelectorAll('[data-n]')),cap=document.getElementById('caption'),
 play=document.getElementById('playBtn'),next=document.getElementById('nextBtn'),timer=null,i=3;
-function show(k){i=k;nodes.forEach(function(n,j){n.className='node';
+function show(k,auto){i=k;cap.setAttribute('aria-live',auto?'off':'polite');nodes.forEach(function(n,j){n.className='node';
  if(k===3||j<k){n.classList.add('pass');}
  else if(j===k){n.classList.add('on');}
  if(k===2&&j===1){n.className='node fail';}});
  cap.textContent=caps[k];}
-function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4);},2200);play.textContent=L.pause;}
+function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4,true);},2200);play.textContent=L.pause;}
 function stop(){if(timer){clearInterval(timer);timer=null;}play.textContent=L.play;}
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 play.addEventListener('click',function(){if(timer){stop();}else{if(i===3)show(0);start();}});

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%2314213d'/%3E%3Cpath d='M9 17l5 5 9-11' stroke='%23f0b33c' stroke-width='4' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <title>cto-team: Claude Code plugin that makes your AI coding agent ship with a CTO, gate by gate</title>
 <meta name="description" content="cto-team is a free Claude Code plugin for vibe coding. A multi-agent team of subagents with code review, test quality checks, API contracts, ripgrep search and low token cost, so what you ask for actually gets built.">
 <link rel="canonical" href="https://cto-team-skill.pages.dev/">
@@ -32,7 +33,7 @@
   },
   "url": "https://cto-team-skill.pages.dev/",
   "license": "https://opensource.org/licenses/MIT",
-  "softwareVersion": "0.4.0",
+  "softwareVersion": "0.4.1",
   "inLanguage": "en"
 }
 </script>
@@ -93,7 +94,7 @@ code,.mono{font-family:var(--mono);font-size:.92em}
 .steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:24px}
 .step3{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
 .step3 .n{font:800 1.6rem/1 var(--display);color:var(--amber-text)}
-.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);overflow-x:auto}
+.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
 footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 20px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.node.on{transform:none}}
 </style>
@@ -239,7 +240,7 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
   <footer>
     <span>MIT license. Credit: <a href="https://github.com/obra/superpowers">obra/superpowers</a></span>
     <a href="https://github.com/nhattrung0911/cto-team">Repository</a>
-    <span>Version 0.4.0</span>
+    <span>Version 0.4.1</span>
   </footer>
 </div>
 <script>
@@ -247,12 +248,12 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
 var caps=["Step 1 of 4. Workers each take one brief and their own files.","Step 2 of 4. The verifier, a separate agent, checks every acceptance criterion.","Step 3 of 4. If something fails, the fixer repairs it and the verifier checks again.","Step 4 of 4. Gate passed. Only now does the next gate start."],L={"pause":"Pause","play":"Play","copied":"Copied.","fallback":"Copy was blocked. The install text is selected, press Ctrl+C."};
 var nodes=[].slice.call(document.querySelectorAll('[data-n]')),cap=document.getElementById('caption'),
 play=document.getElementById('playBtn'),next=document.getElementById('nextBtn'),timer=null,i=3;
-function show(k){i=k;nodes.forEach(function(n,j){n.className='node';
+function show(k,auto){i=k;cap.setAttribute('aria-live',auto?'off':'polite');nodes.forEach(function(n,j){n.className='node';
  if(k===3||j<k){n.classList.add('pass');}
  else if(j===k){n.classList.add('on');}
  if(k===2&&j===1){n.className='node fail';}});
  cap.textContent=caps[k];}
-function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4);},2200);play.textContent=L.pause;}
+function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4,true);},2200);play.textContent=L.pause;}
 function stop(){if(timer){clearInterval(timer);timer=null;}play.textContent=L.play;}
 var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 play.addEventListener('click',function(){if(timer){stop();}else{if(i===3)show(0);start();}});

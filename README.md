@@ -6,7 +6,7 @@ A Claude Code plugin that turns your AI coding agent into a multi-agent team: a 
 
 ## Install
 
-Version 0.4.0. In Claude Code:
+Version 0.4.1. In Claude Code:
 
 ```
 /plugin marketplace add nhattrung0911/cto-team
