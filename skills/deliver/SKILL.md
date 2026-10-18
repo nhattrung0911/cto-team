@@ -34,11 +34,19 @@ Do not run those skills for this plan.
 - Gate status changes only through `node docs/cto/cto-state.mjs <row> <status>`: never edit the Status column by
   hand or with sed. The script refuses illegal moves (a gate running before its dependencies pass, a pass with no
   result file). Report a verdict only after the Workflow result arrives, never while it is still running.
+- Progress line: after every gate, review and FINAL verdict, tell the CEO one plain line, e.g.
+  `G2/5 pass (11 min): sign-up and login work. Next: G3 (groups).` Minutes = since the `start G<n>` commit.
 - Every tool call re-reads your whole context. Batch bookkeeping: put it in one shell call (status edit + commit +
   `git rev-parse HEAD`; ledger append + commit + ownership check). Never spend a call on bookkeeping alone.
 
 ## 1. Setup
-0. Team size — your first and only setup question to the CEO: "How many Sonnet workers per gate?" Ask it with
+0. Size check. A **small job** = 3 plan tasks or fewer, none touching money/numbers, auth/permissions or data
+   writes. Then your only setup question is: "Small job: **direct** (recommended; I build it in this session and run
+   the tests once, a few minutes) or **small mode** (one checked gate, about 10 minutes)?" Direct → stop using this
+   skill; do the plan as a normal coding task. Small mode → `Workers` = the number of tasks; one gate G1 with every
+   task (merge tasks that share files); add `"goals": <n>` (and `"userTest": true` for a UI) to its Workflow so its
+   verifier also does the final check; no REVIEW, no FINAL, no report.html (tell the CEO in 5 lines). Unattended →
+   small mode. Otherwise ask the team size, your first and only setup question: "How many Sonnet workers per gate?" Ask it with
    options 1, 2, 3 (recommended), 4, 5, and one plain line on the trade-off (more workers = faster gates and more
    tokens per gate; 3 fits most projects). Unattended run (the prompt says nobody will answer) → use 3. Write it
    in `gates.md` as `Workers: <n>` and pass it as `"maxWorkers"` in every gate Workflow. On resume, read it back.
