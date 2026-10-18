@@ -130,11 +130,18 @@ Then delete `briefs/`, `results/` and the two scripts, keeping `gates.md`, `ledg
 `report.html`. Tell the CEO in 5–8 lines.
 
 **Context.** Each of your turns re-reads your whole context. Keep agent replies short, and read result files only
-for the detail you need. Past about 150k tokens, write a `Checkpoint:` and tell the CEO to `/clear` and run
-`/cto-team:deliver <plan>` again.
+for the detail you need. At a checkpoint with your context past about 500k tokens:
+- Append to `ledger.md` a `Handoff:` block: the CEO's goals in their own words, anything the CEO said only in chat
+  that is not yet in the spec, and decisions still open.
+- Then append a `Checkpoint:` line.
+- Then stop and ask the CEO to run `/compact`. It keeps a summary, and the files hold the rest. Unattended runs
+  continue.
+
+Why: every turn re-reads the whole context. On a real project the CTO reached 432k and cost about a third of a
+phase's tokens on its own.
 
 **Resume** (branch `cto/<plan-name>` exists):
-- Read `gates.md` and `ledger.md` from the last `Checkpoint:`.
+- Read the spec, `gates.md`, and `ledger.md` from the last `Handoff:` or `Checkpoint:`.
 - A gate in `running` with a dirty tree:
   - Run `git stash push -u -m "cto-team <gate> interrupted"`.
   - Log the stash ref and list it in the report. Never apply a stash yourself.

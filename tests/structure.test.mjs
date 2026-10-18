@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.6.1');
+  assert.equal(m.version, '0.6.2');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -151,7 +151,7 @@ test('v0.6: the CTO leads visible agents; the skill keeps two iron rules, guardr
     'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background', 'follow-up message',      // visible team, fix by its author first
     'shared resources run one at a time', 'its own port and', 'one owner per file',
     'docs/contract/', 'model: "opus"', 'REVIEW-<k>', 'GOAL#<n>', '--carried', 'GAPS', 'UNPROVEN:',
-    '${CLAUDE_SKILL_DIR}', 'how many sonnet workers', 'progress line', 'checkpoint:', '/clear',
+    '${CLAUDE_SKILL_DIR}', 'how many sonnet workers', 'progress line', 'checkpoint:', 'handoff:', '/compact', '500k',
     'git stash push -u', 'cto-state.mjs', 'clean as you go', 'watch the clock', 'exact test command yourself',"git rm` this gate's briefs",
   ]);
   assert.ok(!/Workflow tool|gate\.js/.test(sk), 'no gate workflow');
