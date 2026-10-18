@@ -9,7 +9,7 @@
       "name": "cto-team",
       "source": "./",
       "description": "CEO/CTO delivery: gate-by-gate execution with fresh Sonnet workers, blind verification and a plain-language report.",
-      "version": "0.6.0"
+      "version": "0.6.1"
     }
   ]
 }

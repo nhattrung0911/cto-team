@@ -75,4 +75,4 @@ Plugin không tự đổi settings của bạn. Nếu muốn, thêm vào `~/.cla
 
 ## Credits
 
-Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.6.0.
+Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.6.1.

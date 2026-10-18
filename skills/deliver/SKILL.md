@@ -53,6 +53,9 @@ This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-devel
 - **Clean as you go.** Briefs and results exist only while their gate runs. Delete temporary files as soon as they
   are used. Why: leftovers bloat the project and every later context.
 - **Least model that fits.** Haiku for mechanical tasks, Sonnet by default, Opus for reviews and hard fixes.
+- **Watch the clock.** If a gate runs much longer than its size warrants, stop and find out why before spending
+  more time: a looping worker, a shared resource, a flaky test or a threshold the plan made too strict. Fix the
+  cause or ask the CEO. Why: small jobs most often run long because one wrong step repeats unnoticed.
 
 ## Exact scripts (run as written; do not do their job by hand)
 Copy both from `${CLAUDE_SKILL_DIR}/scripts/` (this skill's folder) to `docs/cto/` at setup.
@@ -60,7 +63,8 @@ Copy both from `${CLAUDE_SKILL_DIR}/scripts/` (this skill's folder) to `docs/cto
   `gates.md`. It refuses illegal moves.
 - `node docs/cto/cto-judge.mjs docs/cto/results/<gate>.json --expect <task>:<n>,... --test "<cmd>" [--critical]
   [--carried F1:<severity>,...]`: prints `PASS`, `FAIL` (give `failing` to a fixer), `GAPS` (the report is
-  incomplete: start a fresh checker, not a fixer) or `BLOCKED` (read `reason`; `UNPROVEN:` means a failure without
+  incomplete: start a fresh checker, not a fixer; if the only gap is a reworded `suite.cmd`, you may run the
+  exact test command yourself instead) or `BLOCKED` (read `reason`; `UNPROVEN:` means a failure without
   evidence, which you check and rule on).
 
 Prompts live in `${CLAUDE_SKILL_DIR}/references/`, written `<refs>` below.
