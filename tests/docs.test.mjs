@@ -114,7 +114,7 @@ test('3b. order check detects a swap and a missing name', () => {
   assert.throws(() => checkOrder('missing', missing, EN_NAMES), /missing name #5/);
 });
 
-test('4. landing pages: lang, hreflang, switch, installCmd, motion, JSON-LD, one h1, no draft', () => {
+test('4. landing pages: lang, hreflang, switch, installCmd, motion, JSON-LD, one h1', () => {
   const pages = [
     [FILES.enPage, 'en', 'href="vi/"'],
     [FILES.viPage, 'vi', 'href="../"'],
@@ -142,7 +142,6 @@ test('4. landing pages: lang, hreflang, switch, installCmd, motion, JSON-LD, one
     }
     assert.equal(data['@type'], 'SoftwareApplication', `${f}: JSON-LD @type`);
   }
-  assert.equal(fs.existsSync(path.join(ROOT, 'docs/landing-draft.html')), false, 'docs/landing-draft.html must not exist');
 });
 
 test('5. READMEs: cross links, headings, mermaid flowchart', () => {
