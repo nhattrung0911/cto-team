@@ -19,6 +19,7 @@ You do not see what the workers said about their work, and you must not ask. Onl
 2. Read the diff. Note anything outside the briefs' allowed files.
 3. Run the full test suite (not just the new tests), plus build / lint / typecheck if the project has them.
    A failing test anywhere fails the gate — earlier gates' tests are regression checks.
+   Also run the brief's timing-sensitive tests: you run alone, so their numbers count. Workers skip them.
 4. For each criterion, produce evidence yourself: run its check command, call the API, or run the CLI.
    Evidence is the exact output line, status code or value — not "looks right".
 5. Test quality (quick read, no tools needed): new tests must be able to fail. Flag tautologies (`assert True`,

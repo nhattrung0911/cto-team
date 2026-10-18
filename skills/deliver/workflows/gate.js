@@ -239,15 +239,18 @@ const carried = reviewFindings.map((f) => f.id)
 const carriedSeverity = new Map(reviewFindings.map((f) => [f.id, f.severity]))
 
 // Verify + fix rounds
-const verify = (round) => {
+// gaps: what the previous verifier report left out (a recheck re-runs the verifier, never a fixer).
+const verify = (round, gaps = []) => {
   phase('Verify')
+  const tag = [round ? `r${round}` : '', gaps.length ? 'recheck' : ''].filter(Boolean).join('.')
   return agent(
     [
       `You are the cto-team verifier for gate ${a.gate}. Read and follow ${ref('verifier-prompt.md')} and ${ref('test-policy.md')}.`,
+      ...(gaps.length ? ['The previous verifier report was incomplete. Verify the gate again and this time also cover:', ...gaps.map((g) => `- ${clip(g, 250)}`)] : []),
       `Acceptance criteria come only from these briefs:`,
       ...briefs.map((b) => `- ${inRoot(b)}`),
       `Review range: git diff ${rangeBase}..HEAD plus the working tree.`,
-      'Give every criterion an id: <task id>#<its number in the brief> (e.g. G2-T1#3). Report the full suite run in `suite` (command, exit code, one-line summary); run the test command above, adding flags only.',
+      'Give every criterion an id: <task id>#<its number in the brief> (e.g. G2-T1#3). Report the full suite run in `suite` (command, exit code, one-line summary). Run the test command above and put it in `suite.cmd` exactly as given: copy it, add flags only, never shorten or paraphrase it.',
       mode === 'final' ? `Also check each spec goal (numbered in the spec or in docs/cto/gates.md) end to end and report it as GOAL#1 … GOAL#${a.goals}.` : '',
       ...(reviewLines.length ? ['Also report each of these findings as a criterion with its id ([F1], [U1], …): it must now be fixed and covered by a regression test that fails without the fix (no such test = Important failing criterion):', ...reviewLines] : []),
       mutate
@@ -256,10 +259,10 @@ const verify = (round) => {
       'Ignore docs/cto/ (the CTO\'s own files) in the junk and out-of-scope checks.',
       contract.length ? 'Contract conformance: check that the running app matches the contract (routes, field names and types, status codes); a mismatch is an Important failing criterion.' : '',
       mode === 'final' ? 'This is the FINAL whole-app check: run the full suite, build, and the main user flow end to end.' : '',
-      `Write the full detail to ${inRoot(stagePath(round ? `r${round}` : ''))} (path relative to the root: ${stagePath(round ? `r${round}` : '')}).`,
+      `Write the full detail to ${inRoot(stagePath(tag))} (path relative to the root: ${stagePath(tag)}).`,
       common,
     ].filter(Boolean).join('\n'),
-    { label: `verify:${a.gate}:r${round}`, phase: 'Verify', model: MODEL, schema: VERIFIER, ...CHECKER },
+    { label: `verify:${a.gate}:r${round}${gaps.length ? ':recheck' : ''}`, phase: 'Verify', model: MODEL, schema: VERIFIER, ...CHECKER },
   )
 }
 
@@ -284,39 +287,55 @@ function judge(v) {
   if (unproven.length) return blocked(unproven.map((c) => `UNPROVEN: [${c.severity}] ${clip(c.criterion, 150)}`).join('; '))
   const failing = own.filter((c) => !c.pass && c.severity !== 'Minor' && proven(c.evidence))
   const minor = own.filter((c) => !c.pass && c.severity === 'Minor')
+  // Gaps in the verifier's own report (not faults in the code): they go back to a verifier, never to a fixer.
+  const gaps = []
   if (m.checked && m.caught === false) {
     failing.push({ criterion: 'tests do not catch the mutated behaviour', severity: 'Important', evidence: 'mutation check: related tests still passed' })
   }
-  if (v.criteria.length === 0) {
-    failing.push({ criterion: 'verifier reported no criteria', severity: 'Important', evidence: 'empty checklist' })
-  }
-  const suite = v.suite || {}
+  if (v.criteria.length === 0) gaps.push('verifier reported no criteria (empty checklist)')
   const squash = (x) => String(x || '').trim().replace(/\s+/g, ' ')
-  const sameCmd = !a.testCmd || squash(suite.cmd).startsWith(squash(a.testCmd))
-  if (suite.exit !== 0 || !sameCmd || !String(suite.summary || '').trim()) {
-    const why = !v.suite ? 'verifier did not report the full suite run'
-      : !sameCmd ? `ran "${clip(suite.cmd, 100)}", not the test command "${clip(a.testCmd, 100)}"`
-      : `${clip(suite.cmd, 100)} exit ${suite.exit}: ${clip(suite.summary, 150) || '(no summary)'}`
-    failing.push({ criterion: 'full suite is not green', severity: 'Important', evidence: why })
+  if (!v.suite) gaps.push('verifier did not report the full suite run in `suite`')
+  else {
+    const suite = v.suite
+    if (a.testCmd && !squash(suite.cmd).includes(squash(a.testCmd))) {
+      gaps.push(`suite.cmd was "${clip(suite.cmd, 100)}", not the test command "${clip(a.testCmd, 100)}" exactly`)
+    }
+    if (!String(suite.summary || '').trim()) gaps.push('suite.summary is empty')
+    if (suite.exit !== 0) {
+      failing.push({ criterion: 'full suite is not green', severity: 'Important', evidence: `${clip(suite.cmd, 100)} exit ${suite.exit}: ${clip(suite.summary, 150) || '(no summary)'}` })
+    }
   }
   const ids = new Map(v.criteria.filter((c) => c.id).map((c) => [String(c.id).replace(/[\[\]]/g, ''), c]))
   const expected = mode === 'gate'
     ? tasks.flatMap((t) => Array.from({ length: t.criteria }, (_, k) => `${t.id}#${k + 1}`))
     : mode === 'final' ? Array.from({ length: a.goals }, (_, k) => `GOAL#${k + 1}`) : []
   for (const id of expected) {
-    if (!ids.has(id)) failing.push({ criterion: `${id} not checked by the verifier`, severity: 'Important', evidence: `no criterion with id ${id} in the verifier result` })
+    if (!ids.has(id)) gaps.push(`${id} not checked by the verifier (no criterion with id ${id})`)
   }
   // A carried finding keeps its original severity and passes only when re-checked as passing, with evidence.
   for (const id of carried) {
     const c = ids.get(id)
     const sev = carriedSeverity.get(id) || 'Important'
-    if (!c) failing.push({ criterion: `${id} not re-checked by the verifier`, severity: sev, evidence: `no criterion with id ${id} in the verifier result` })
+    if (!c) gaps.push(`${id} not re-checked by the verifier (no criterion with id ${id})`)
     else if (!c.pass || !proven(c.evidence)) {
       failing.push({ criterion: `${id} still failing or not proven fixed: ${clip(c.criterion, 150)}`, severity: sev, evidence: proven(c.evidence) ? c.evidence : 'no evidence given' })
     }
   }
-  const bad = v.verdict !== 'PASS' || failing.length > 0 || v.junk.length > 0
-  return { verdict: bad ? 'FAIL' : 'PASS', failing, minor }
+  if (failing.length > 0 || v.junk.length > 0) return { verdict: 'FAIL', failing, minor, gaps }
+  if (v.verdict !== 'PASS' && gaps.length === 0) gaps.push('verifier said FAIL but named no failing criterion with evidence')
+  return { verdict: gaps.length ? 'FAIL' : 'PASS', failing, minor, gaps }
+}
+
+// Verify, and when the only problems are gaps in the report, ask a fresh verifier once more; still gaps: the CTO decides.
+async function verifyChecked(round) {
+  v = await verify(round)
+  j = judge(v)
+  if (j.verdict !== 'FAIL' || j.failing.length || v.junk.length) return
+  v = await verify(round, j.gaps)
+  j = judge(v)
+  if (j.verdict !== 'FAIL' || j.failing.length || v.junk.length) return
+  const gapRows = j.gaps.map((g) => ({ criterion: g, severity: 'Important', evidence: 'verifier report incomplete twice' }))
+  j = { verdict: 'BLOCKED', failing: gapRows, minor: j.minor, reason: `REPORT: verifier report incomplete twice: ${j.gaps.map((g) => clip(g, 150)).join('; ')}` }
 }
 
 let round = 0
@@ -327,8 +346,7 @@ if (mode === 'review') {
   v = { junk: [], uiUnverified: [], mutation: { checked: false, caught: null, restored: null } }
   j = { verdict: 'FAIL', failing: reviewFindings.map((f) => ({ criterion: `[${f.id}] ${f.file}: ${f.issue}`, severity: f.severity, evidence: f.evidence })), minor: [] }
 } else {
-  v = await verify(round)
-  j = judge(v)
+  await verifyChecked(round)
   if (mode === 'final' && a.userTest) {
     // A fresh non-technical user tries the main flows; proven problems join the fix rounds.
     phase('User test')
@@ -380,8 +398,7 @@ while (j.verdict === 'FAIL' && round < MAX_FIX_ROUNDS) {
     blockers.push(`fix round ${round}: ${fix.concerns.map((c) => clip(c)).join('; ') || 'blocked'}`)
     return compact('BLOCKED', round, v, j)
   } else fix.concerns.forEach((c) => concerns.push(`fix round ${round}: ${clip(c)}`))
-  v = await verify(round)
-  j = judge(v)
+  await verifyChecked(round)
 }
 
 if (j.reason) blockers.push(j.reason)

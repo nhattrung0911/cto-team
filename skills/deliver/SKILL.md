@@ -114,6 +114,8 @@ Status values: `todo | running | pass | fail | blocked`. Add a row for each `REV
      criterion in the result file: if it is real, re-brief and re-run; if it is not, log
      `Ruling: <criterion> not a failure — <why> — <cost if wrong>` and treat the gate as PASS (a Critical one
      needs a fresh re-run instead, never a ruling).
+     `REPORT:` → two verifiers left gaps in their report (wrong `suite.cmd`, missing ids); the code was not judged
+     faulty. Check `testCmd` is the bare command, re-run the suite yourself, then re-run the gate or rule as above.
      Stop-list items go to the CEO. Every agent "returned no result" → the plugin's lean agents (`cto-team:worker`,
      `cto-team:checker`) may not be loaded: re-run the gate with `"lean": false` and log a `Ruling:`.
 5. Briefs for the next gate may use what this gate produced; update the brief, not the plan.
