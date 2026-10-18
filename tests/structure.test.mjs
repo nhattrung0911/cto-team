@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.4.1');
+  assert.equal(m.version, '0.4.2');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -85,7 +85,7 @@ test('deliver frontmatter', () => {
   assert.match(f.head, /\nname: deliver\b/);
   assert.match(f.head, /\ndescription: .*deliver/i);
   assert.match(f.head, /\ndescription: .*plan/i);
-  assert.ok(f.lines < 170, `deliver SKILL.md has ${f.lines} lines`);
+  assert.ok(f.lines < 180, `deliver SKILL.md has ${f.lines} lines`);
 });
 
 test('deliver links resolve', () => linksResolve('skills/deliver'));
@@ -263,4 +263,8 @@ test('v0.4.1: workers skip timing tests and run the full suite once; the verifie
   has(REF + 'fixer-prompt.md', ['once']);
   has(REF + 'verifier-prompt.md', ['timing-sensitive', 'alone']);
   has(REF + 'gate-brief.md', ['Timing-sensitive tests']);
+});
+
+test('v0.4.2: deliver offers a direct path or small mode for small jobs, and reports progress per gate', () => {
+  has('skills/deliver/SKILL.md', ['small job', 'small mode', 'direct', '"goals"', 'progress line']);
 });
