@@ -12,3 +12,5 @@ Ruling: README.md must still satisfy tests/structure.test.mjs (it requires /cto-
 G1 PASS rounds=2 2b63986 — EN + VI landing pages, README.md (88 lines), README.vi.md (77 lines); draft deleted; ownership check clean. Status/ledger recorded in the next commit (shell guard split the batch).
 Ruling: README.md Mermaid uses quoted edge labels (-->|"fail"|) — valid GitHub Mermaid syntax; the brief's "no | outside quotes" meant node labels — cost if wrong: one diagram line to change.
 Ruling: favicon.ico 404 in the console does not fail G1-T1#1 — it is the browser's automatic request, not a page error; moved to techdebt — cost if wrong: one inline favicon line.
+G2 PASS rounds=0 — tests/docs.test.mjs, 7 tests (6 planned + order-helper self-check); suite 99/99; ownership check clean.
+Ruling: keep the worker's optional DOCS_TEST_ROOT env var in tests/docs.test.mjs (defaults to repo root) — lets the tests be proven against a mutated copy without touching real files; no effect on npm test — cost if wrong: a few lines to drop.
