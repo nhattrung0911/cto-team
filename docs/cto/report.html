@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Landing page v2 and README: delivery report</title>
+<style>
+  :root { --bg:#fbfaf7; --fg:#1d1d1f; --muted:#5f6368; --line:#e3e1dc; --card:#ffffff; --ok:#1b7f4c; --warn:#a15c00; --accent:#2f5bd3; }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#141416; --fg:#ececee; --muted:#a2a5ab; --line:#2c2d31; --card:#1c1d20; --ok:#4cc38a; --warn:#f0a646; --accent:#7ea2ff; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.8rem; line-height:1.25; margin: 0 0 8px; }
+  h2 { font-size: 1.15rem; margin: 36px 0 12px; padding-bottom: 6px; border-bottom: 1px solid var(--line); }
+  .lead { color: var(--muted); font-size: 1.05rem; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; }
+  pre, code { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; font-size: .92em; }
+  pre { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { text-align: left; vertical-align: top; padding: 8px; border-bottom: 1px solid var(--line); }
+  th { color: var(--muted); font-weight: 600; font-size: .9rem; }
+  .table-wrap { overflow-x: auto; }
+  .ok { color: var(--ok); } .warn { color: var(--warn); }
+  .mermaid { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 12px; overflow-x: auto; }
+  footer { margin-top: 48px; color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Landing page v2 and README: delivery report</h1>
+  <p class="lead">Done. cto-team now has two landing pages, one in English and one in Vietnamese, with the same
+  design and a switch between them. It also has two matching READMEs and a test file that keeps all four in line.
+  Every check passed. Nothing was pushed, merged or deployed. The work is on branch
+  <code>cto/2026-10-18-landing-v2</code> and waits for you.</p>
+
+  <h2>How to try it</h2>
+  <div class="card">
+    <p>In a terminal, go to the worktree folder <code>.claude/worktrees/cto-landing-v2</code> (or check out the branch) and run:</p>
+    <pre>python -m http.server 8080 --directory docs</pre>
+    <p>Then open <code>http://localhost:8080/</code> (English) and click <strong>VI</strong> for the Vietnamese page.
+    Try it on your phone's width, in dark mode, and press Pause / Next on the gate diagram.</p>
+    <p>Read <code>README.md</code> and <code>README.vi.md</code> on the branch. GitHub shows the gate diagram once the branch is pushed.</p>
+    <p>Run the tests: <code>npm test</code> (100 tests, all pass).</p>
+    <p>To go live on Cloudflare Pages, publish only <code>docs/index.html</code> and <code>docs/vi/</code> (see the gaps below).</p>
+  </div>
+
+  <h2>What works</h2>
+  <div class="card">
+    <p><strong class="ok">1. Two landing pages, English and Vietnamese, with a switch.</strong> Done:
+    <code>docs/index.html</code> and <code>docs/vi/index.html</code>. An EN | VI switch sits in the header, and
+    <code>hreflang</code> tags tell Google the two pages are translations of each other.
+    Checked by: a browser test that clicked the switch both ways and read the page head.</p>
+    <p><strong class="ok">2. Short page, benefits first.</strong> Each page has a short hero with the install
+    command and a Copy button, then an animated diagram of one gate (workers, then verifier, then fixer, then pass)
+    that you can pause and step through. Then come ten feature cards (before, after, benefit), "Start in 3 steps"
+    with the real commands, and a footer. It has no benchmark charts and no long tables.
+    Checked by: a browser at 320 and 375 px (no sideways scrolling), light and dark mode, and reduced motion.
+    A separate "first-time visitor" tester also used the pages.</p>
+    <p><strong class="ok">3. READMEs in both languages.</strong> <code>README.md</code> (88 lines) and
+    <code>README.vi.md</code> (77 lines) follow the same order. Each has a hero line, install, a feature table
+    (before / after), a small gate diagram, 3 steps, FAQ and credits. Each links to the other language and to the
+    landing page. Checked by: an Opus review and the new tests.</p>
+    <p><strong class="ok">4. Good SEO.</strong> Each language has its own title, description, Open Graph tags
+    (for link previews on social media), one main heading, and feature names as headings. Each page also has
+    JSON-LD, a small block that tells search engines "this is a free developer app". Checked by: the final
+    verifier and <code>tests/docs.test.mjs</code>.</p>
+    <p>Extra safety: <code>tests/docs.test.mjs</code> fails if the install lines, the version, the ten feature
+    names, the language links or the banned "SDD missed…" claim ever drift.</p>
+  </div>
+
+  <h2>Tech stack</h2>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Component</th><th>Choice</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td>Landing pages</td><td>One self-contained HTML file per language</td><td>No build step, nothing to install, deploys anywhere for free.</td></tr>
+        <tr><td>Fonts and look</td><td>Bricolage Grotesque + IBM Plex (Google Fonts), blueprint style from your draft</td><td>Keeps the look you liked, and the fonts support Vietnamese letters.</td></tr>
+        <tr><td>Two languages</td><td>Two static pages linked with <code>hreflang</code></td><td>Google indexes both languages. A JavaScript toggle would hide one.</td></tr>
+        <tr><td>Diagrams in READMEs</td><td>Mermaid</td><td>GitHub draws it from plain text, so no image files are needed.</td></tr>
+        <tr><td>Tests</td><td>Node's built-in test runner</td><td>Already used by the project, so there is no new dependency.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>How it fits together</h2>
+  <pre class="mermaid">
+flowchart LR
+  V["Visitor or AI agent"] --> EN["docs/index.html (English)"]
+  V --> VI["docs/vi/index.html (Vietnamese)"]
+  EN <-->|"EN / VI switch"| VI
+  EN -->|"GitHub link"| R["README.md"]
+  VI -->|"GitHub link"| RV["README.vi.md"]
+  R <-->|"language link"| RV
+  C["docs/contract/contract.md: exact names and links"] -.-> T["tests/docs.test.mjs"]
+  T -.->|"checks"| EN
+  T -.->|"checks"| VI
+  T -.->|"checks"| R
+  T -.->|"checks"| RV
+  </pre>
+
+  <h2>Known gaps and tech debt</h2>
+  <div class="card">
+    <p><strong class="warn">Before you deploy:</strong> if Cloudflare Pages publishes the whole <code>docs/</code>
+    folder, it also publishes the internal notes next to the pages (<code>docs/cto/</code>, specs, plans). They are
+    already public in the GitHub repo and hold no secrets, but they do not belong on the site. Set the Pages output
+    to a folder that holds only <code>index.html</code> and <code>vi/</code>, or add a small copy step. There is
+    also no <code>robots.txt</code> or <code>sitemap.xml</code> yet. Each takes a few minutes.</p>
+    <p>Small items, none of them blocks use:</p>
+    <ul>
+      <li>The browser tab has no icon, so it logs one harmless "favicon not found" message. Fix: one line.</li>
+      <li>Screen readers hear the diagram caption every 2.2 seconds while it plays, until the user presses Pause. Fix: small.</li>
+      <li>Vietnamese wording: the page's proof point 5 says "số 20 chữ số" (it leaves out "tiền", money). Proof point 7 keeps an English phrase. Fix: two words.</li>
+      <li><code>README.vi.md</code> is shorter than the English one in the settings notes, and its diagram has no "pass/fail" labels. Fix: small.</li>
+      <li>The tests do not yet catch every drift, for example small wording differences between EN and VI, or a suffix added to an install line. Fix: small.</li>
+      <li>In the check sandbox, Google Fonts could not load, so nobody saw the Vietnamese letters in the real fonts. The fonts do support Vietnamese. Check once in your browser.</li>
+    </ul>
+    <p>Full list: <code>docs/cto/techdebt.md</code>.</p>
+  </div>
+
+  <h2>Effort</h2>
+  <p>The team worked in 2 build gates, 1 Opus review and 1 final check, with 3 fix rounds in total. That took
+  15 agents: Sonnet workers, verifiers and fixers, one Opus reviewer and one user tester. Every decision is
+  logged in <code>docs/cto/ledger.md</code>.</p>
+
+  <footer>Delivered with cto-team. Details: docs/cto/ledger.md, docs/cto/results/.</footer>
+</main>
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11.4.1/dist/mermaid.esm.min.mjs';
+  const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  mermaid.initialize({ startOnLoad: true, theme: dark ? 'dark' : 'default', securityLevel: 'strict' });
+</script>
+</body>
+</html>

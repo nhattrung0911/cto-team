@@ -10,3 +10,4 @@
 - REVIEW-1: docs/vi/index.html proof point 5 says "số 20 chữ số" (drops "tiền"/amount); README.vi.md says "số tiền".
 - REVIEW-1: the autoplaying gate diagram updates a polite live region every 2.2 s until paused; screen-reader users hear it repeatedly. Announce only on user-driven steps.
 - REVIEW-1: serving docs/ as the site root also publishes docs/cto/, docs/contract/, docs/specs/, docs/plans/ (public in the repo anyway, no secrets); no robots.txt or sitemap.xml. Deploy only index.html and vi/ (see report).
+- FINAL: the install-line test uses a substring match, so a suffix added to an install line is not caught.

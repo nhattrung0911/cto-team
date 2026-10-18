@@ -17,3 +17,5 @@ Ruling: keep the worker's optional DOCS_TEST_ROOT env var in tests/docs.test.mjs
 REVIEW-1 PASS rounds=1 — Opus found 1 Important (pages never showed /cto-team:plan, /clear, /cto-team:deliver, so a visitor could not start a delivery); fixed in both pages + test 4b; 7 Minor to techdebt.md.
 Ruling: no new gate after REVIEW-1 — no Critical finding open; the public-docs/ finding is not a privacy risk (the repo is public, the files hold no secrets) and is handled at deploy time by the CEO — cost if wrong: internal notes visible on the site until a deploy filter is set.
 Checkpoint: next FINAL; open: none (7 Minor in techdebt.md).
+FINAL PASS rounds=0 — 4/4 goals end to end, suite 100/100, mutation caught and restored, user tester found only the favicon 404 (Minor).
+Ruling: report.html written in English — the CEO's prompt is in English — cost if wrong: a translation pass.
