@@ -25,7 +25,7 @@ Assume there are bugs left.
 3. Error paths: missing resources, external failure, malformed files, double submit, concurrent requests.
 4. Consistency across gates: the same rule enforced the same way everywhere (validation, permissions, rounding,
    time zones), and routes, fields and status codes matching the contract in `docs/contract/` (or the spec if
-   there is none). Findings without evidence are counted as Minor by the gate script.
+   there is none). Findings without evidence count as Minor.
 5. Security basics: auth on every route that needs it, secrets not logged or stored in plaintext, output escaped.
 6. Tests: a behaviour that matters but has no test.
 
@@ -36,5 +36,5 @@ Minor = polish, naming, small inconsistencies with no user impact.
 
 ## Output
 - Write the full detail to the result path from your prompt (JSON or Markdown): each finding with steps to reproduce.
-- Return only the structured output: `findings` (max 15, most severe first), each with `severity`, `file`
+- Also write `{"findings": [...]}` as JSON to that path, and reply to the CTO in 3 lines at most. `findings` (max 15, most severe first), each with `severity`, `file`
   (path:line), `issue` (one line), `evidence` (short), `fix` (one line).

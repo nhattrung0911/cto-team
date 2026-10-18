@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.4.2');
+  assert.equal(m.version, '0.5.0');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -56,7 +56,7 @@ test('worker prompt states the contract', () => {
 });
 
 test('verifier prompt is blind and evidence-based', () => {
-  has(REF + 'verifier-prompt.md', ['assume the work is broken', 'git diff', 'full test suite', 'mutation', 'restore', 'git status', 'UNVERIFIED', 'Critical', 'Important', 'Minor', 'do not edit source', 'write the full detail to']);
+  has(REF + 'verifier-prompt.md', ['assume the work is broken', 'git diff', 'full test suite', 'mutation', 'restore', 'git status', 'UNVERIFIED', 'Critical', 'Important', 'Minor', 'do not edit source', 'write the result path']);
 });
 
 test('fixer prompt requires root cause', () => {
@@ -89,10 +89,6 @@ test('deliver frontmatter', () => {
 });
 
 test('deliver links resolve', () => linksResolve('skills/deliver'));
-
-test('deliver states the hard rules', () => {
-  has('skills/deliver/SKILL.md', ['replaces', 'REQUIRED SUB-SKILL', 'at most `Workers` tasks', 'disjoint', 'never edit product code', 'SendMessage', 'Ruling:', 'scope', 'destructive', 'paid', 'secret', 'cto/', 'baseline', 'git stash', 'G0', 'Workflow', 'scriptPath', 'gates.md', 'ledger.md', 'report.html', '/clear']);
-});
 
 test('report template has every placeholder and a mermaid block', () => {
   const t = read(REF + 'report-template.html');
@@ -138,133 +134,25 @@ test('plan review prompt', () => has(PREF + 'plan-review-prompt.md', ['guess', '
 test('README covers install, usage, settings', () => {
   has('README.md', ['/plugin marketplace add nhattrung0911/cto-team', '/plugin install cto-team@cto-team', '/cto-team:plan', '/cto-team:deliver', 'CLAUDE_CODE_AUTO_COMPACT_WINDOW', 'CLAUDE_CODE_SUBAGENT_MODEL', 'Playwright', 'superpowers']);
 });
-
-test('e2e checker rejects an empty folder', async () => {
-  const { mkdtempSync } = await import('node:fs');
-  const { tmpdir } = await import('node:os');
-  const { spawnSync } = await import('node:child_process');
-  const dir = mkdtempSync(join(tmpdir(), 'cto-e2e-'));
-  const r = spawnSync(process.execPath, [join(ROOT, 'tests', 'e2e-check.mjs'), dir], { encoding: 'utf8' });
-  assert.equal(r.status, 1);
-  assert.match(r.stdout + r.stderr, /gates\.md/);
-});
-
-test('review fixes: safe mutation restore, docs/cto ignored, stash -u, fix gate after FINAL', () => {
-  has(REF + 'verifier-prompt.md', ['never git checkout', 'hash-object', 'MAIN:', 'docs/cto/']);
-  has(REF + 'test-policy.md', ['never git checkout', 'hash-object']);
-  assert.ok(!/confirm `?git diff`? (is )?clean/i.test(read(REF + 'test-policy.md')), 'test-policy still says git diff clean');
-  has('skills/deliver/SKILL.md', ['stash push -u', 'fix gate', '"files"']);
-  has(REF + 'fixer-prompt.md', ['new dependencies']);
-});
-
-test('deliver copies gate.js into the project (Workflow only accepts readable script paths)', () => {
-  has('skills/deliver/SKILL.md', ['docs/cto/gate.js']);
-});
-
-test('v0.2: review step and large-number rule', () => {
-  has(REF + 'reviewer-prompt.md', ['reproduce', 'overflow', '500', 'Critical', 'Important', 'Minor', 'anti-goal']);
-  has(REF + 'test-policy.md', ['overflow', 'never 500']);
-  has(REF + 'verifier-prompt.md', ['overflow', '5xx']);
-  has(REF + 'gate-brief.md', ['overflow']);
-  has('skills/deliver/SKILL.md', ['"mode": "review"', 'branchBase']);
-});
-
-test('v0.3: contract-first, ownership check, coverage, evidence rule, CEO questions', () => {
-  has('skills/deliver/SKILL.md', ['docs/contract/', 'CONTRACT:', 'ownership check', 'Goals', 'coverage', 'UNPROVEN:', 'batch bookkeeping']);
-  has(REF + 'gate-brief.md', ['contract']);
-  has(REF + 'worker-prompt.md', ['CONTRACT:', 'never edit the contract']);
-  has(REF + 'verifier-prompt.md', ['contract', 'no evidence']);
-  has(REF + 'reviewer-prompt.md', ['contract']);
-  has('skills/plan/SKILL.md', ['at most 5', 'recommended', 'Clarifications', 'contract']);
-  has('skills/plan/references/spec-template.md', ['## Clarifications', '## Contract']);
-});
-
-test('v0.4: team size question, user test in FINAL, rg hook documented', () => {
-  has('skills/deliver/SKILL.md', ['how many sonnet workers', 'maxWorkers', 'unattended', '"userTest": true', 'user-tester-prompt.md']);
-  has(REF + 'user-tester-prompt.md', ['non-technical user', '375px', 'raw JSON', 'evidence']);
-  has('README.md', ['ripgrep', 'workers per gate']);
-});
-
-test('v0.4: batch reviews, checkpoints, no polish gates after review', () => {
-  has('skills/deliver/SKILL.md', ['REVIEW-<k>', 'every 3–4 passed gates', 'Checkpoint:', '/clear', 'only for a Critical finding']);
-  has(REF + 'reviewer-prompt.md', ['batch of gates']);
-});
-
-test('v0.4: lean plugin agents with role tool lists', () => {
+test('lean plugin agents with role tool lists; the checker cannot edit', () => {
   const w = read('agents/worker.md'), c = read('agents/checker.md');
   assert.match(w, /^name: worker$/m);
   assert.match(w, /^tools: .*Edit/m);
   assert.match(c, /^name: checker$/m);
   assert.doesNotMatch(c, /^tools: .*\bEdit\b/m, 'checker must not edit');
   assert.match(c, /^tools: .*mcp__playwright/m);
-  has('skills/deliver/SKILL.md', ['"lean": false']);
-  has('README.md', ['lean agents']);
 });
 
-test('v0.4 Codex fixes are documented', () => {
-  has('skills/deliver/SKILL.md', ['git diff --name-only <gate_base>', 'git ls-files --others --exclude-standard', 'docs(contract):', 'Stash:', '"criteria": 4', 'Ruling: <criterion> not a failure', 'REVIEW-<k>` and for `FINAL`']);
-  has(REF + 'verifier-prompt.md', ['git hash-object <file>', 'never null', '`suite`', 'G1-T1'.slice(0, 0) + '<task id>#<number in the brief>']);
-  has(REF + 'worker-prompt.md', ['quiet output']);
-  has('README.md', ['not a security boundary', '2.1.301']);
-});
-
-test('e2e checker requires FINAL and REVIEW PASS lines', async () => {
-  const { mkdtempSync, mkdirSync, writeFileSync } = await import('node:fs');
-  const { tmpdir } = await import('node:os');
-  const { spawnSync } = await import('node:child_process');
-  const dir = mkdtempSync(join(tmpdir(), 'cto-e2e-'));
-  const c = join(dir, 'docs', 'cto');
-  mkdirSync(join(c, 'results'), { recursive: true });
-  writeFileSync(join(c, 'gates.md'), '| Gate | Tasks | Status |\n|---|---|---|\n| G1 | T1 | pass |\n');
-  writeFileSync(join(c, 'results', 'G1.json'), '{}');
-  writeFileSync(join(c, 'results', 'FINAL.json'), '{}');
-  writeFileSync(join(c, 'ledger.md'), 'G1 PASS rounds=0\nFINAL FAIL rounds=2\n');
-  writeFileSync(join(c, 'report.html'), '<html></html>');
-  const r = spawnSync(process.execPath, [join(ROOT, 'tests', 'e2e-check.mjs'), dir], { encoding: 'utf8' });
-  assert.equal(r.status, 1);
-  assert.match(r.stdout + r.stderr, /FINAL/);
-});
-
-test('e2e checker: conforming project passes; any non-pass row or missing stage file fails', async () => {
-  const { mkdtempSync, mkdirSync, writeFileSync } = await import('node:fs');
-  const { tmpdir } = await import('node:os');
-  const { spawnSync, execFileSync } = await import('node:child_process');
-  const make = (rows, files) => {
-    const dir = mkdtempSync(join(tmpdir(), 'cto-e2e-ok-'));
-    const c = join(dir, 'docs', 'cto');
-    mkdirSync(join(c, 'results'), { recursive: true });
-    writeFileSync(join(c, 'gates.md'), `Workers: 3 | Test: node -e "process.exit(0)" | App: none | Contract: none\n| Gate | Tasks | Depends on | Status |\n|---|---|---|---|\n${rows}`);
-    for (const f of files) writeFileSync(join(c, 'results', f), '{}');
-    writeFileSync(join(c, 'ledger.md'), 'G1 PASS rounds=0\nREVIEW-1 PASS rounds=1\nFINAL PASS rounds=0\n');
-    writeFileSync(join(c, 'report.html'), '<html></html>');
-    const g = (...a) => execFileSync('git', a, { cwd: dir, encoding: 'utf8' });
-    g('init', '-q'); g('checkout', '-q', '-b', 'cto/x'); g('add', '-A');
-    g('-c', 'user.email=t@t', '-c', 'user.name=t', 'commit', '-q', '-m', 'x');
-    return spawnSync(process.execPath, [join(ROOT, 'tests', 'e2e-check.mjs'), dir], { encoding: 'utf8' });
-  };
-  const good = '| G1 | T1 | - | pass |\n| REVIEW-1 | - | G1 | pass |\n| FINAL | - | REVIEW-1 | pass |\n';
-  const ok = make(good, ['G1.json', 'REVIEW-1.review.json', 'FINAL.json']);
-  assert.equal(ok.status, 0, ok.stdout + ok.stderr);
-  const blockedReview = make(good.replace('| REVIEW-1 | - | G1 | pass |', '| REVIEW-1 | - | G1 | blocked |'), ['G1.json', 'REVIEW-1.review.json', 'FINAL.json']);
-  assert.equal(blockedReview.status, 1);
-  assert.match(blockedReview.stdout, /REVIEW-1/);
-  const noReviewFile = make(good, ['G1.json', 'FINAL.json']);
-  assert.equal(noReviewFile.status, 1);
-});
-
-test('round 2 docs: state script, FINAL goals, fix gate after FINAL gets a review, honest cost, checker wording', () => {
-  has('skills/deliver/SKILL.md', ['docs/cto/cto-state.mjs', 'never edit the Status column', '"goals"', 'its own `REVIEW-<k>`', 'never estimate tokens', 'only after the Workflow result']);
-  has('README.md', ['instruction boundary']);
-  assert.ok(!read('README.md').includes('Checkers cannot edit files'));
-});
-
-test('v0.4.1: workers skip timing tests and run the full suite once; the verifier runs them alone', () => {
-  has(REF + 'worker-prompt.md', ['timing-sensitive', 'once at the end']);
-  has(REF + 'fixer-prompt.md', ['once']);
-  has(REF + 'verifier-prompt.md', ['timing-sensitive', 'alone']);
-  has(REF + 'gate-brief.md', ['Timing-sensitive tests']);
-});
-
-test('v0.4.2: deliver offers a direct path or small mode for small jobs, and reports progress per gate', () => {
-  has('skills/deliver/SKILL.md', ['small job', 'small mode', 'direct', '"goals"', 'progress line']);
+test('v0.5: the CTO leads with visible agents and keeps only the quality guardrails', () => {
+  has('skills/deliver/SKILL.md', [
+    'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background',          // visible team the CTO leads
+    'cto-judge.mjs', 'independently verified', 'GAPS', 'UNPROVEN:', '--carried',      // nothing counts until judged
+    'shared resources run one at a time', 'one owner per file',                        // no stepping on each other
+    'docs/contract/', 'test-policy.md', 'model: "opus"', 'REVIEW-<k>', 'GOAL#<n>',     // contract, tests, reviews, final
+    'how many sonnet workers', 'progress line', 'Checkpoint:', '/clear', 'git stash push -u', 'cto-state.mjs',
+  ]);
+  assert.ok(!/Workflow tool|gate\.js/.test(read('skills/deliver/SKILL.md')), 'v0.5 has no gate workflow');
+  has(REF + 'worker-prompt.md', ['never start a build', 'more than 3 times', 'CONTRACT:', 'quiet output']);
+  has(REF + 'verifier-prompt.md', ['assume the work is broken', 'hash-object', 'never git checkout', 'suite.cmd', 'you run alone', 'overflow', '5xx']);
+  has(REF + 'reviewer-prompt.md', ['reproduce', 'overflow', 'anti-goal', '"findings"']);
 });

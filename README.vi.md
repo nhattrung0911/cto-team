@@ -51,7 +51,7 @@ flowchart LR
 - **Chi phí thế nào?** Mỗi agent chạy một lần và khởi động gọn, Sonnet làm phần lớn việc nên token được tiết kiệm.
 - **Không có Playwright MCP thì sao?** Vẫn chạy được; verifier dùng E2E test của project hoặc ghi rõ là `UNVERIFIED`.
 - **Nên chọn bao nhiêu worker?** Từ 1 đến 5 mỗi gate, mặc định 3.
-- **Việc nhỏ có nên dùng không?** Không cần. Từ 3 task trở xuống, không đụng tiền, đăng nhập hay ghi dữ liệu, CTO sẽ đề nghị làm thẳng, hoặc chạy một gate có kiểm (small mode).
+- **Việc nhỏ có nên dùng không?** Không cần. Từ 3 task trở xuống, không đụng tiền, đăng nhập hay ghi dữ liệu, CTO tự làm luôn rồi cho một checker kiểm: vài phút, không chạy cả quy trình.
 
 ## Những gì xuất hiện trong project
 
@@ -75,4 +75,4 @@ Plugin không tự đổi settings của bạn. Nếu muốn, thêm vào `~/.cla
 
 ## Credits
 
-Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.4.2.
+Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.5.0.

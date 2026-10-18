@@ -27,6 +27,6 @@ Important = a normal mistake leads to a broken page, raw error, or a dead end.
 Minor = wording, layout polish, small confusion with an easy way out.
 
 ## Output
-Return only the structured output: `findings` (max 10, most severe first), each with `severity`, `file` (the page
+Write `{"findings": [...]}` as JSON to the result path from your prompt and reply in 3 lines at most. `findings` (max 10, most severe first), each with `severity`, `file` (the page
 or command), `issue` (one line, in a user's words), `evidence` (what you did and what you saw; a finding without
 evidence is counted as Minor), `fix` (one line).

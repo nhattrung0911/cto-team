@@ -45,7 +45,7 @@ if (next === 'running' && col.deps >= 0) {
     if (dep.c[col.status] !== 'pass') die(`${row} depends on ${d}, which is ${dep.c[col.status]}`);
   }
 }
-// Stage files: <row>.json, <row>.r1.json, <row>.review.json, <row>.user.json (see gate.js).
+// Stage files: <row>.json, <row>.r1.json, <row>.review.json, <row>.user.json (written by the verifier, reviewer and user tester).
 const RESULTS = join('docs', 'cto', 'results');
 const isResult = (f) => {
   const name = f.toLowerCase();

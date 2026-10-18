@@ -19,7 +19,7 @@ You do not see what the workers said about their work, and you must not ask. Onl
 2. Read the diff. Note anything outside the briefs' allowed files.
 3. Run the full test suite (not just the new tests), plus build / lint / typecheck if the project has them.
    A failing test anywhere fails the gate — earlier gates' tests are regression checks.
-   Also run the brief's timing-sensitive tests: you run alone, so their numbers count. Workers skip them.
+   Also run the build, E2E and perf tests: you run alone, so their numbers count. Workers usually skip them.
 4. For each criterion, produce evidence yourself: run its check command, call the API, or run the CLI.
    Evidence is the exact output line, status code or value — not "looks right".
 5. Test quality (quick read, no tools needed): new tests must be able to fail. Flag tautologies (`assert True`,
@@ -55,13 +55,15 @@ You do not see what the workers said about their work, and you must not ask. Onl
    Critical and Important failures block the gate. Use the brief's severity unless the effect is worse.
 
 A failing criterion with no evidence (no command output, status code or value you produced) is not sent to
-fixers: the gate script blocks the gate as UNPROVEN and the CTO decides. Reproduce before you fail something.
+fixers: `cto-judge.mjs` blocks it as UNPROVEN and the CTO decides. Reproduce before you fail something.
 
 ## Output
-- Write the full detail to the result path from your prompt as JSON: the checklist with
-  `criterion | pass | severity | evidence`, commands run with one-line results, mutation details, junk, UI notes.
-- Return only the structured output: `verdict` (PASS only if every Critical/Important criterion passes, the full
+- Write the result path from your prompt as one JSON object (the CTO's `cto-judge.mjs` reads it):
+  `{"verdict","criteria":[{"id","criterion","pass","severity","evidence"}],"mutation":{"checked","caught","restored"},
+  "suite":{"cmd","exit","summary"},"junk":[],"uiUnverified":[],"notes":[]}`.
+- Put the test command in `suite.cmd` exactly as given (add flags only). Fields: `verdict` (PASS only if every Critical/Important criterion passes, the full
   suite is green and junk is empty), `criteria` (each with its `id`: `<task id>#<number in the brief>`, or the
   finding id `F1`/`U1` given in your prompt), `mutation`, `suite` (the full-suite command, its exit code and a
   one-line summary), `junk`, `uiUnverified`. Every criterion and finding in your prompt must appear. Keep evidence
   strings short.
+- Reply to the CTO in 3 lines at most: verdict, counts, the result path.

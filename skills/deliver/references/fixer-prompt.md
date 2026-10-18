@@ -19,7 +19,7 @@ A verifier rejected this gate. You fix exactly the findings in your prompt. You 
 6. Run the tests for each finding, then the full test suite from the brief once. Read the output.
 7. Clean up your own temporary files. Do not commit. Do not add new dependencies unless a brief allows it.
 
-## Return (structured output only)
+## Return (your final reply, ≤10 short lines)
 - `rootCause`: one or two sentences per finding, with the evidence.
 - `status`: `DONE`, `DONE_WITH_CONCERNS`, `BLOCKED` (needs something outside your control; say what), or `FAILED`.
 - `files`, `tests` (command + one-line result), `concerns`.

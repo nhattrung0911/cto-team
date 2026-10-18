@@ -6,7 +6,7 @@ A Claude Code plugin that turns your AI coding agent into a multi-agent team: a 
 
 ## Install
 
-Version 0.4.2. In Claude Code:
+Version 0.5.0. In Claude Code:
 
 ```
 /plugin marketplace add nhattrung0911/cto-team
@@ -53,7 +53,7 @@ flowchart LR
 - **What does it cost?** Every agent is one-shot and starts small, and Sonnet does most of the work. You choose the workers per gate.
 - **Can I use it without Playwright?** Yes. UI checks fall back to the project's E2E tests or are reported as `UNVERIFIED`.
 - **How many workers?** 1–5 per gate, default 3.
-- **Is it worth it for a tiny change?** No. For 3 tasks or fewer with no money, auth or data writes, the CTO suggests building it directly, or one checked gate (small mode).
+- **Is it worth it for a tiny change?** No. For 3 tasks or fewer with no money, auth or data writes, the CTO builds it itself and has one checker verify it: minutes, not a full delivery.
 
 ## What lands in your project
 
@@ -71,16 +71,14 @@ Optional, copy yourself into `~/.claude/settings.json`. The plugin never changes
   "env": {
     "CLAUDE_CODE_AUTO_COMPACT_WINDOW": "500000",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
-    "CLAUDE_CODE_WORKFLOW_MAX_CONCURRENT_AGENTS": "6",
     "BASH_MAX_OUTPUT_LENGTH": "15000"
-  },
-  "workflowSizeGuideline": "medium"
+  }
 }
 ```
 
 - The ripgrep hook only acts inside cto-team projects. It is a convenience, not a security boundary: an unusual command (an alias, `env grep`, a nested shell) can slip past it.
 - Workers and checkers run as the plugin's lean agents with only the tools their role needs. Checkers have no Edit tool and are told never to change source. This is an instruction boundary, not a permission sandbox: they still have shell access.
-- Tested with Claude Code 2.1.301 (needs the Workflow tool and plugin agents).
+- Tested with Claude Code 2.1.301 (needs plugin agents).
 
 ## Credits
 
