@@ -6,7 +6,7 @@ A Claude Code plugin that turns your AI coding agent into a multi-agent team: a 
 
 ## Install
 
-Version 0.4.1. In Claude Code:
+Version 0.4.2. In Claude Code:
 
 ```
 /plugin marketplace add nhattrung0911/cto-team
@@ -53,6 +53,7 @@ flowchart LR
 - **What does it cost?** Every agent is one-shot and starts small, and Sonnet does most of the work. You choose the workers per gate.
 - **Can I use it without Playwright?** Yes. UI checks fall back to the project's E2E tests or are reported as `UNVERIFIED`.
 - **How many workers?** 1–5 per gate, default 3.
+- **Is it worth it for a tiny change?** No. For 3 tasks or fewer with no money, auth or data writes, the CTO suggests building it directly, or one checked gate (small mode).
 
 ## What lands in your project
 
