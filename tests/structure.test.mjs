@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.4.0');
+  assert.equal(m.version, '0.4.1');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -256,4 +256,11 @@ test('round 2 docs: state script, FINAL goals, fix gate after FINAL gets a revie
   has('skills/deliver/SKILL.md', ['docs/cto/cto-state.mjs', 'never edit the Status column', '"goals"', 'its own `REVIEW-<k>`', 'never estimate tokens', 'only after the Workflow result']);
   has('README.md', ['instruction boundary']);
   assert.ok(!read('README.md').includes('Checkers cannot edit files'));
+});
+
+test('v0.4.1: workers skip timing tests and run the full suite once; the verifier runs them alone', () => {
+  has(REF + 'worker-prompt.md', ['timing-sensitive', 'once at the end']);
+  has(REF + 'fixer-prompt.md', ['once']);
+  has(REF + 'verifier-prompt.md', ['timing-sensitive', 'alone']);
+  has(REF + 'gate-brief.md', ['Timing-sensitive tests']);
 });

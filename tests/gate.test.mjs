@@ -148,11 +148,13 @@ test('critical gate without a completed mutation check is blocked', async () => 
   assert.equal(off.result.verdict, 'PASS');
 });
 
-test('empty criteria fail the gate', async () => {
+test('empty criteria never pass: the verifier is asked again', async () => {
   const { calls } = await runGate(baseArgs(), {
     worker: () => done(), verifier: (_p, _o, n) => (n === 1 ? pass({ criteria: [] }) : pass()), fixer: () => fixed(),
   });
-  assert.equal(byRole(calls, 'fixer').length, 1);
+  assert.equal(byRole(calls, 'verifier').length, 2);
+  const stuck = await runGate(baseArgs(), { worker: () => done(), verifier: () => pass({ criteria: [] }), fixer: () => fixed() });
+  assert.equal(stuck.result.verdict, 'BLOCKED');
 });
 
 test('unverifiable main flow blocks; other unverified items do not reach fixers', async () => {
@@ -420,7 +422,7 @@ const F = (id, ok = true) => ({ id, criterion: `finding ${id} fixed`, pass: ok, 
 test('review: a carried finding the verifier does not re-check cannot pass', async () => {
   const s = { reviewer: () => ({ findings: [finding('Important', 'huge amount returns 500')] }), fixer: () => fixed() };
   const silent = await runGate(reviewArgs(), { ...s, verifier: () => pass() });
-  assert.equal(silent.result.verdict, 'FAIL');
+  assert.notEqual(silent.result.verdict, 'PASS');
   assert.ok(silent.result.failing.some((c) => c.criterion.includes('F1')));
   const ok = await runGate(reviewArgs(), { ...s, verifier: () => pass({ criteria: [...pass().criteria, F('F1')] }) });
   assert.equal(ok.result.verdict, 'PASS');
@@ -552,4 +554,60 @@ test('each stage writes its own result file, so review evidence is not overwritt
   const fin = await runGate(finalArgs({ userTest: true }), { verifier: () => pass(), user: () => ({ findings: [] }) });
   assert.ok(byRole(fin.calls, 'verifier')[0].prompt.includes('docs/cto/results/FINAL.json'));
   assert.ok(byRole(fin.calls, 'user')[0].prompt.includes('docs/cto/results/FINAL.user.json'));
+});
+
+test('v0.4.1: a paraphrased test command re-asks the verifier once, never a fixer', async () => {
+  const short = pass({ suite: { cmd: 'check;test', exit: 0, summary: '42 passed' } });
+  const { result, calls } = await runGate(baseArgs(), { worker: () => done(), verifier: (_p, _o, n) => (n === 1 ? short : pass()), fixer: () => fixed() });
+  assert.equal(result.verdict, 'PASS');
+  assert.equal(result.rounds, 0);
+  assert.equal(byRole(calls, 'fixer').length, 0);
+  const v = byRole(calls, 'verifier');
+  assert.equal(v.length, 2);
+  assert.ok(v[1].label.endsWith(':recheck'));
+  assert.ok(v[1].prompt.includes('check;test'));
+  assert.ok(v[1].prompt.includes('docs/cto/results/G2.recheck.json'));
+});
+
+test('v0.4.1: a reporting gap that persists blocks for the CTO, without a fixer', async () => {
+  const short = pass({ suite: { cmd: 'check;test', exit: 0, summary: '42 passed' } });
+  const { result, calls } = await runGate(baseArgs(), { worker: () => done(), verifier: () => short, fixer: () => fixed() });
+  assert.equal(result.verdict, 'BLOCKED');
+  assert.equal(byRole(calls, 'fixer').length, 0);
+  assert.equal(byRole(calls, 'verifier').length, 2);
+  assert.ok(result.blockers.some((b) => /^REPORT:/.test(b) && b.includes('check;test')));
+});
+
+test('v0.4.1: missing ids, an empty checklist or a bare FAIL are reporting gaps, not code faults', async () => {
+  const partial = pass({ criteria: pass().criteria.slice(1) });
+  const bare = pass({ verdict: 'FAIL' });
+  for (const first of [partial, pass({ criteria: [] }), bare, pass({ suite: undefined })]) {
+    const { result, calls } = await runGate(baseArgs(), { worker: () => done(), verifier: (_p, _o, n) => (n === 1 ? first : pass()), fixer: () => fixed() });
+    assert.equal(result.verdict, 'PASS');
+    assert.equal(byRole(calls, 'fixer').length, 0);
+    assert.equal(byRole(calls, 'verifier').length, 2);
+  }
+});
+
+test('v0.4.1: real failures go to the fixer without the reporting gaps', async () => {
+  const both = fail({ suite: { cmd: 'check;test', exit: 0, summary: '41 passed' } });
+  const { calls } = await runGate(baseArgs(), { worker: () => done(), verifier: (_p, _o, n) => (n === 1 ? both : pass()), fixer: () => fixed() });
+  const f = byRole(calls, 'fixer');
+  assert.equal(f.length, 1);
+  assert.ok(f[0].prompt.includes('rejects non-member reading group'));
+  assert.ok(!f[0].prompt.includes('not the test command'));
+  assert.ok(!f[0].prompt.includes('not checked by the verifier'));
+});
+
+test('v0.4.1: a red suite is a code fault even when the command was paraphrased', async () => {
+  const red = pass({ verdict: 'FAIL', suite: { cmd: 'check;test', exit: 1, summary: '1 failed' } });
+  const { calls } = await runGate(baseArgs(), { worker: () => done(), verifier: (_p, _o, n) => (n === 1 ? red : pass()), fixer: () => fixed() });
+  assert.equal(byRole(calls, 'fixer').length, 1);
+});
+
+test('v0.4.1: the test command may be wrapped, and the verifier is told to copy it exactly', async () => {
+  const { result, calls } = await runGate(baseArgs(), { worker: () => done(), verifier: () => pass({ suite: { cmd: 'cd app && pytest -q', exit: 0, summary: '42 passed' } }) });
+  assert.equal(result.verdict, 'PASS');
+  assert.equal(byRole(calls, 'verifier').length, 1);
+  assert.ok(/exactly as given/.test(byRole(calls, 'verifier')[0].prompt));
 });

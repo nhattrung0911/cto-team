@@ -40,6 +40,7 @@ Each needs a real test.>
 ## Commands
 - Run this task's tests: `<command>`
 - Full suite (must stay green): `<command>`
+- Timing-sensitive tests (performance budgets, load, frame rate; verifier only): `<command or none>`
 - Start the app (UI/API tasks only): `<command>`
 
 ## Out of scope

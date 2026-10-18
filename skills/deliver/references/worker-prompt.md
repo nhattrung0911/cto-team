@@ -18,9 +18,12 @@ You implement one task. You are one-shot: when you return, you are done for good
    - Cover every case in the brief's "Break-prone cases" section.
    - Put tests in the project's test folder. These real tests stay in the repo.
 4. Touch only the files the brief allows. If you must touch another file, do the minimum and say why in `concerns`.
-5. Run the task's tests, then the full suite from the brief's Commands with quiet output (e.g. `pytest -q`,
-   read only the summary and failures). Other workers may be editing in parallel: a failure in a file you did not
-   touch goes in `concerns`, not into your fix.
+5. While you work, run only the task's tests (plus a quick typecheck or lint). Run the full suite from the brief's
+   Commands once at the end, with quiet output (e.g. `pytest -q`, read only the summary and failures).
+   Skip timing-sensitive tests (performance budgets, load, benchmarks, frame-rate or input-delay checks): other
+   workers share the machine, so their timings are noise. The verifier runs them alone.
+   Other workers may be editing in parallel: a failure in a file you did not touch goes in `concerns`, not into
+   your fix.
 6. Clean up: delete temporary files you created — scratch scripts, screenshots, logs, scratch databases,
    debug prints, commented-out code. `git status` should show only intended changes.
 7. Do not commit. The CTO commits after the gate passes.
