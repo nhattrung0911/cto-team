@@ -6,7 +6,7 @@ A Claude Code plugin that turns your AI coding agent into a multi-agent team: a 
 
 ## Install
 
-Version 0.5.1. In Claude Code:
+Version 0.5.2. In Claude Code:
 
 ```
 /plugin marketplace add nhattrung0911/cto-team
@@ -58,7 +58,7 @@ flowchart LR
 ## What lands in your project
 
 ```
-docs/cto/              gate map, briefs, verifier results, ledger, tech debt, report.html
+docs/cto/              gate map, ledger, tech debt, report.html (briefs and results are deleted when done)
 docs/contract/         the API contract (only the CTO edits it)
 ```
 

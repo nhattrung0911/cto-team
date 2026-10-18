@@ -56,7 +56,7 @@ flowchart LR
 ## Những gì xuất hiện trong project
 
 ```
-docs/cto/        gate map, brief, kết quả verifier, ledger, báo cáo report.html
+docs/cto/        gate map, ledger, tech debt, báo cáo report.html (brief và kết quả tự xóa khi xong)
 docs/contract/   contract của API (chỉ CTO được sửa)
 ```
 
@@ -75,4 +75,4 @@ Plugin không tự đổi settings của bạn. Nếu muốn, thêm vào `~/.cla
 
 ## Credits
 
-Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.5.1.
+Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.5.2.

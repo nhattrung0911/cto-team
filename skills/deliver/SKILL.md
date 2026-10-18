@@ -78,7 +78,7 @@ This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-devel
        stay inside the gate's files. `docs/cto/` does not count. Rule on anything else.
      - Run `cto-state.mjs G<n> pass`.
      - Append `G<n> PASS — <one line>` to `ledger.md`, and add the minors to `techdebt.md`.
-     - Commit `feat(G<n>): …`.
+     - Delete that gate's briefs and result files (`git rm`; git keeps them) and commit `feat(G<n>): …`.
    - **FAIL:** give the `failing` list to a fresh worker as fixer, using `references/fixer-prompt.md`.
      Then verify again with a fresh checker, overwriting `G<n>.json` (git keeps the history). After two failed fixes, rethink: split
      the task, re-brief it, or run the last fix on `model: "opus"`.
@@ -101,7 +101,8 @@ This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-devel
   checker follows `references/user-tester-prompt.md`. Fix proven problems the same way.
 - **Report.** Write `docs/cto/report.html` from `references/report-template.html` in the CEO's chat language:
   what works and how to try it, the tech stack, a Mermaid architecture diagram, known gaps in plain words, and
-  gates and rounds. Never estimate tokens. Tell the CEO in 5–8 lines.
+  gates and rounds. Never estimate tokens. Then delete `briefs/`, `results/` and the two scripts, so only
+  `gates.md`, `ledger.md`, `techdebt.md` and `report.html` stay. Tell the CEO in 5–8 lines.
 
 ## 4. Context
 Your context is the team's memory, and each of your turns re-reads all of it. Keep worker and checker replies
@@ -114,7 +115,8 @@ If branch `cto/<plan-name>` exists:
 - Read `gates.md` and `ledger.md` from the last `Checkpoint:`.
 - For a gate in `running` with a dirty tree, run `git stash push -u -m "cto-team <gate> interrupted"`. Log the
   stash ref in `ledger.md`, and list it in the report. Never apply a stash on your own.
-- Re-run that gate from step 2.2.
+- Re-run that gate from step 2.2. Delete leftover briefs and result files of gates already in `pass`.
 
 ## Files you own (in the project)
-`docs/cto/` (gates.md, briefs/, results/, ledger.md, techdebt.md, report.html, the two scripts) and `docs/contract/`.
+`docs/cto/` and `docs/contract/`. Keep only what is still needed: briefs and results live only while their gate
+runs, and anything temporary is deleted as soon as it is used.
