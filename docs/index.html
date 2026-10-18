@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cto-team: Claude Code plugin that makes your AI coding agent ship with a CTO, gate by gate</title>
+<meta name="description" content="cto-team is a free Claude Code plugin for vibe coding. A multi-agent team of subagents with code review, test quality checks, API contracts, ripgrep search and low token cost, so what you ask for actually gets built.">
+<link rel="canonical" href="https://cto-team-skill.pages.dev/">
+<link rel="alternate" hreflang="en" href="https://cto-team-skill.pages.dev/">
+<link rel="alternate" hreflang="vi" href="https://cto-team-skill.pages.dev/vi/">
+<link rel="alternate" hreflang="x-default" href="https://cto-team-skill.pages.dev/">
+<meta property="og:title" content="cto-team: Claude Code plugin that makes your AI coding agent ship with a CTO, gate by gate">
+<meta property="og:description" content="cto-team is a free Claude Code plugin for vibe coding. A multi-agent team of subagents with code review, test quality checks, API contracts, ripgrep search and low token cost, so what you ask for actually gets built.">
+<meta property="og:url" content="https://cto-team-skill.pages.dev/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "cto-team",
+  "description": "A free Claude Code plugin that turns your AI coding agent into a CTO with a team of subagents, verified gate by gate.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Windows, macOS, Linux",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "url": "https://cto-team-skill.pages.dev/",
+  "license": "https://opensource.org/licenses/MIT",
+  "softwareVersion": "0.4.0",
+  "inLanguage": "en"
+}
+</script>
+<style>
+:root{--paper:#edf1f3;--panel:#f8fafb;--ink:#0f2236;--ink-2:#44576a;--rule:#b9c6d1;--line:#1d5fa8;--amber:#f2b33d;--amber-text:#7a4b00;--amber-soft:#f6e2b8;--pass:#166a3a;--pass-soft:#d6efe0;--fail:#a02f18;--fail-soft:#f7dcd4;
+--display:"Bricolage Grotesque","Be Vietnam Pro","Segoe UI",system-ui,sans-serif;--body:"IBM Plex Sans","Be Vietnam Pro","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0c1724;--panel:#12202f;--ink:#e6edf3;--ink-2:#a9b9c8;--rule:#2f4459;--line:#7db4f0;--amber-text:#f2b33d;--amber-soft:#3a2c10;--pass:#4cc38a;--pass-soft:#12342a;--fail:#f58a73;--fail-soft:#3d1d17;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0c1724;--panel:#12202f;--ink:#e6edf3;--ink-2:#a9b9c8;--rule:#2f4459;--line:#7db4f0;--amber-text:#f2b33d;--amber-soft:#3a2c10;--pass:#4cc38a;--pass-soft:#12342a;--fail:#f58a73;--fail-soft:#3d1d17;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--paper);background-image:linear-gradient(color-mix(in srgb,var(--rule) 45%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--rule) 45%,transparent) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:16px/1.6 var(--body);overflow-wrap:anywhere}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:48px}
+h1,h2,h3{font-family:var(--display);line-height:1.12;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,4.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:800}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0;max-width:65ch}
+a{color:var(--line)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--amber-text)}
+.lede{color:var(--ink-2);font-size:1.12rem}
+:focus-visible{outline:2px solid var(--line);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--panel);color:var(--ink);padding:12px}
+.skip:focus{left:8px;top:8px;z-index:10}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding-block:16px;border-bottom:1px solid var(--rule)}
+.brand{font:800 1.25rem/1 var(--display);color:var(--ink);text-decoration:none}
+.top nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lang{display:inline-flex;border:1px solid var(--rule);border-radius:4px;background:var(--panel);overflow:hidden}
+.lang a,.lang .cur{font:600 .85rem/1 var(--mono);padding:12px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.lang .cur{background:var(--ink);color:var(--paper)}
+.lang a{color:var(--line)}
+.hero{padding-block:48px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.install{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;max-width:760px}
+.install pre{flex:1 1 260px;min-width:0;margin:0;padding:14px 16px;background:var(--ink);color:var(--paper);font:.9rem/1.7 var(--mono);border-radius:4px;overflow-x:auto;white-space:pre}
+.btn{font:600 .95rem/1.2 var(--body);padding:12px 18px;border-radius:4px;border:1px solid var(--ink);background:var(--amber);color:#1a1205;cursor:pointer;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{filter:brightness(1.06)}
+.copystatus{flex-basis:100%;font-size:.9rem;color:var(--ink-2);min-height:1.4em}
+.board{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:16px;margin-top:20px;max-width:900px}
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+.node{font:500 .95rem/1.3 var(--body);padding:12px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink);display:grid;gap:2px;min-width:0;flex:1 1 130px;transition:border-color .2s,background-color .2s,transform .2s}
+.node small{font:.78rem/1.3 var(--mono);color:var(--ink-2)}
+.node.on{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-2px)}
+.node.pass{border-color:var(--pass);background:var(--pass-soft)}
+.node.fail{border-color:var(--fail);background:var(--fail-soft)}
+.caption{min-height:3.4em;border-top:1px solid var(--rule);padding-top:12px}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px;margin-top:24px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.card .num{font:600 .78rem/1 var(--mono);color:var(--amber-text)}
+.card p{max-width:none}
+.card .tag{font:600 .78rem/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin-right:6px}
+.card .benefit{color:var(--ink);font-weight:500}
+.proof{font:500 .85rem/1.45 var(--mono);padding:12px;border:1px solid var(--pass);background:var(--pass-soft);color:var(--ink);border-radius:3px}
+.note{color:var(--ink-2);font-size:.92rem;margin-top:18px}
+.steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:24px}
+.step3{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.step3 .n{font:800 1.6rem/1 var(--display);color:var(--amber-text)}
+.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);overflow-x:auto}
+footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 20px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.node.on{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./">cto-team</a>
+    <nav aria-label="Language">
+      <div class="lang"><span class="cur" aria-current="page">EN</span><a href="vi/" hreflang="vi" lang="vi">VI</a></div>
+      <a class="btn ghost" href="https://github.com/nhattrung0911/cto-team">GitHub</a>
+    </nav>
+  </header>
+  <main id="main">
+  <div class="hero">
+    <span class="eyebrow">Claude Code plugin · MIT</span>
+    <h1>You stay the CEO.<br>Claude becomes your CTO.</h1>
+    <p class="lede">Plan once, then ship gate by gate. A separate agent checks every gate, and the next one starts only after it passes.</p>
+    <div class="install">
+      <pre id="installCmd">/plugin marketplace add nhattrung0911/cto-team
+/plugin install cto-team@cto-team</pre>
+      <button class="btn" id="copyBtn" type="button">Copy install</button>
+      <a class="btn ghost" href="https://github.com/nhattrung0911/cto-team">GitHub</a>
+      <span class="copystatus" id="copyStatus" role="status"></span>
+    </div>
+  </div>
+
+  <section id="gate" aria-labelledby="gateH">
+    <span class="eyebrow">One gate</span>
+    <h2 id="gateH">How one gate runs</h2>
+    <p class="lede">Workers build, a verifier checks, a fixer repairs, then the gate passes.</p>
+    <div class="board">
+      <div class="flow">
+        <div class="node pass" data-n="0">Workers<small>Sonnet, one brief each</small></div>
+        <div class="node pass" data-n="1">Verifier<small>separate agent, full suite</small></div>
+        <div class="node pass" data-n="2">Fixer<small>repairs what failed</small></div>
+        <div class="node pass" data-n="3">Pass<small>next gate may start</small></div>
+      </div>
+      <div class="caption" id="caption" role="status" aria-live="polite">Step 4 of 4. Gate passed. Only now does the next gate start.</div>
+      <div class="controls" role="group" aria-label="Gate animation controls">
+        <button class="btn" id="playBtn" type="button" hidden>Pause</button>
+        <button class="btn ghost" id="nextBtn" type="button" hidden>Next step</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" aria-labelledby="featH">
+    <span class="eyebrow">Feature by feature</span>
+    <h2 id="featH">What changes after you install it</h2>
+    <div class="cards">
+      <article class="card">
+        <span class="num">01</span>
+        <h3>CTO plans once, then delivers gate by gate</h3>
+        <p><span class="tag">Before</span>One agent gets the whole plan and drifts</p>
+        <p><span class="tag">After</span>Workers get one brief each; the next gate starts only after this one passes</p>
+        <p class="benefit">Each worker stays on its own small job, and nothing moves on early.</p>
+      </article>
+      <article class="card">
+        <span class="num">02</span>
+        <h3>Contract-first API</h3>
+        <p><span class="tag">Before</span>Frontend and backend each guess the API</p>
+        <p><span class="tag">After</span>One contract file the CTO owns; workers may not edit it; the verifier checks the app against it</p>
+        <p class="benefit">Both sides build to the same API, and the verifier checks the app against it.</p>
+      </article>
+      <article class="card">
+        <span class="num">03</span>
+        <h3>The CTO splits the team</h3>
+        <p><span class="tag">Before</span>You hand-assign agents; two agents edit the same file</p>
+        <p><span class="tag">After</span>You pick 1–5 Sonnet workers per gate; the CTO gives each disjoint files</p>
+        <p class="benefit">You only choose the team size; the CTO keeps workers out of each other’s files.</p>
+      </article>
+      <article class="card">
+        <span class="num">04</span>
+        <h3>Blind verifier on every gate</h3>
+        <p><span class="tag">Before</span>“Tests pass”, says the agent that wrote them</p>
+        <p><span class="tag">After</span>A separate agent proves every acceptance criterion, runs the full suite, and breaks one line the tests must catch</p>
+        <p class="benefit">The check comes from an agent that did not write the code.</p>
+      </article>
+      <article class="card">
+        <span class="num">05</span>
+        <h3>No fake tests, no 500s</h3>
+        <p><span class="tag">Before</span>assert True slips through; huge input crashes</p>
+        <p><span class="tag">After</span>Fake tests fail the gate; every number gets an overflow test</p>
+        <p class="benefit">Fake tests are stopped at the gate, and every number is tested for overflow.</p>
+        <p class="proof">v0.1 crashed on a 20-digit amount; fixed from v0.2</p>
+      </article>
+      <article class="card">
+        <span class="num">06</span>
+        <h3>Opus batch review</h3>
+        <p><span class="tag">Before</span>Bugs across features are found by users</p>
+        <p><span class="tag">After</span>Every 3–4 gates Opus reviews the batch</p>
+        <p class="benefit">Opus reviews several gates together, not just one at a time.</p>
+        <p class="proof">Found a real race condition the per-gate checks missed</p>
+      </article>
+      <article class="card">
+        <span class="num">07</span>
+        <h3>Lean on tokens</h3>
+        <p><span class="tag">Before</span>Long-lived “member” agents grow huge</p>
+        <p><span class="tag">After</span>Every agent is one-shot and starts small; Sonnet does most of the work</p>
+        <p class="benefit">Small, one-shot agents keep your token cost down.</p>
+        <p class="proof">12k vs 42k start context; 0.9M vs 3.8M tokens per agent</p>
+      </article>
+      <article class="card">
+        <span class="num">08</span>
+        <h3>ripgrep instead of grep</h3>
+        <p><span class="tag">Before</span>Slow recursive grep, noisy output</p>
+        <p><span class="tag">After</span>A hook points agents to ripgrep (faster, respects .gitignore)</p>
+        <p class="benefit">Searches run faster and skip what .gitignore excludes.</p>
+      </article>
+      <article class="card">
+        <span class="num">09</span>
+        <h3>Picks up after a reset</h3>
+        <p><span class="tag">Before</span>Context reset = redo or lost work</p>
+        <p><span class="tag">After</span>State lives in docs/cto/; delivery resumes from the last checkpoint</p>
+        <p class="benefit">A reset does not cost you the work already done.</p>
+      </article>
+      <article class="card">
+        <span class="num">10</span>
+        <h3>Report a non-coder can read</h3>
+        <p><span class="tag">Before</span>A long chat log</p>
+        <p><span class="tag">After</span>One HTML report: what works, how to try it, tech stack, architecture diagram, known gaps</p>
+        <p class="benefit">You read one page instead of scrolling a chat.</p>
+      </article>
+    </div>
+    <p class="note">Quality reference: on a 10-task test app every version passed 14/14 hidden tests.</p>
+  </section>
+
+  <section id="start" aria-labelledby="startH">
+    <h2 id="startH">Start in 3 steps</h2>
+    <div class="steps3">
+      <div class="step3"><span class="n">1</span><h3>Install</h3><p>Paste these two lines into Claude Code.</p>
+        <pre>/plugin marketplace add nhattrung0911/cto-team
+/plugin install cto-team@cto-team</pre></div>
+      <div class="step3"><span class="n">2</span><h3>Describe</h3><p>Tell Claude what you want to build. The CTO plans it with you once.</p></div>
+      <div class="step3"><span class="n">3</span><h3>Pick your team</h3><p>Choose 1–5 Sonnet workers per gate. Delivery runs gate by gate, then you read one report.</p></div>
+    </div>
+  </section>
+  </main>
+  <footer>
+    <span>MIT license. Credit: <a href="https://github.com/obra/superpowers">obra/superpowers</a></span>
+    <a href="https://github.com/nhattrung0911/cto-team">Repository</a>
+    <span>Version 0.4.0</span>
+  </footer>
+</div>
+<script>
+(function(){
+var caps=["Step 1 of 4. Workers each take one brief and their own files.","Step 2 of 4. The verifier, a separate agent, checks every acceptance criterion.","Step 3 of 4. If something fails, the fixer repairs it and the verifier checks again.","Step 4 of 4. Gate passed. Only now does the next gate start."],L={"pause":"Pause","play":"Play","copied":"Copied.","fallback":"Copy was blocked. The install text is selected, press Ctrl+C."};
+var nodes=[].slice.call(document.querySelectorAll('[data-n]')),cap=document.getElementById('caption'),
+play=document.getElementById('playBtn'),next=document.getElementById('nextBtn'),timer=null,i=3;
+function show(k){i=k;nodes.forEach(function(n,j){n.className='node';
+ if(k===3||j<k){n.classList.add('pass');}
+ else if(j===k){n.classList.add('on');}
+ if(k===2&&j===1){n.className='node fail';}});
+ cap.textContent=caps[k];}
+function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4);},2200);play.textContent=L.pause;}
+function stop(){if(timer){clearInterval(timer);timer=null;}play.textContent=L.play;}
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+play.addEventListener('click',function(){if(timer){stop();}else{if(i===3)show(0);start();}});
+next.addEventListener('click',function(){stop();show((i+1)%4);});
+play.hidden=false;next.hidden=false;
+if(reduce){stop();show(3);}else{show(0);start();}
+var cb=document.getElementById('copyBtn'),pre=document.getElementById('installCmd'),st=document.getElementById('copyStatus');
+function sel(){var r=document.createRange();r.selectNodeContents(pre);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+function fb(){try{sel();}catch(e){}st.textContent=L.fallback;}
+cb.addEventListener('click',function(){
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+   navigator.clipboard.writeText(pre.textContent).then(function(){st.textContent=L.copied;},fb);
+  }else{fb();}
+ }catch(e){fb();}
+});
+})();</script>
+</body>
+</html>

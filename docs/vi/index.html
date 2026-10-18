@@ -1,0 +1,271 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>cto-team: plugin Claude Code biến AI coding agent thành CTO giao việc theo từng gate</title>
+<meta name="description" content="cto-team là plugin Claude Code miễn phí cho vibe coding. Đội multi-agent gồm các subagent, có code review, kiểm tra chất lượng test, API contract, tìm kiếm bằng ripgrep và chi phí token thấp, để thứ bạn yêu cầu thật sự được làm xong.">
+<link rel="canonical" href="https://cto-team-skill.pages.dev/vi/">
+<link rel="alternate" hreflang="en" href="https://cto-team-skill.pages.dev/">
+<link rel="alternate" hreflang="vi" href="https://cto-team-skill.pages.dev/vi/">
+<link rel="alternate" hreflang="x-default" href="https://cto-team-skill.pages.dev/">
+<meta property="og:title" content="cto-team: plugin Claude Code biến AI coding agent thành CTO giao việc theo từng gate">
+<meta property="og:description" content="cto-team là plugin Claude Code miễn phí cho vibe coding. Đội multi-agent gồm các subagent, có code review, kiểm tra chất lượng test, API contract, tìm kiếm bằng ripgrep và chi phí token thấp, để thứ bạn yêu cầu thật sự được làm xong.">
+<meta property="og:url" content="https://cto-team-skill.pages.dev/vi/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="vi_VN">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "cto-team",
+  "description": "Plugin Claude Code miễn phí biến AI coding agent của bạn thành CTO với đội subagent, được kiểm tra theo từng gate.",
+  "applicationCategory": "DeveloperApplication",
+  "operatingSystem": "Windows, macOS, Linux",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "url": "https://cto-team-skill.pages.dev/vi/",
+  "license": "https://opensource.org/licenses/MIT",
+  "softwareVersion": "0.4.0",
+  "inLanguage": "vi"
+}
+</script>
+<style>
+:root{--paper:#edf1f3;--panel:#f8fafb;--ink:#0f2236;--ink-2:#44576a;--rule:#b9c6d1;--line:#1d5fa8;--amber:#f2b33d;--amber-text:#7a4b00;--amber-soft:#f6e2b8;--pass:#166a3a;--pass-soft:#d6efe0;--fail:#a02f18;--fail-soft:#f7dcd4;
+--display:"Bricolage Grotesque","Be Vietnam Pro","Segoe UI",system-ui,sans-serif;--body:"IBM Plex Sans","Be Vietnam Pro","Segoe UI",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,"Cascadia Mono",Consolas,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0c1724;--panel:#12202f;--ink:#e6edf3;--ink-2:#a9b9c8;--rule:#2f4459;--line:#7db4f0;--amber-text:#f2b33d;--amber-soft:#3a2c10;--pass:#4cc38a;--pass-soft:#12342a;--fail:#f58a73;--fail-soft:#3d1d17;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#0c1724;--panel:#12202f;--ink:#e6edf3;--ink-2:#a9b9c8;--rule:#2f4459;--line:#7db4f0;--amber-text:#f2b33d;--amber-soft:#3a2c10;--pass:#4cc38a;--pass-soft:#12342a;--fail:#f58a73;--fail-soft:#3d1d17;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background-color:var(--paper);background-image:linear-gradient(color-mix(in srgb,var(--rule) 45%,transparent) 1px,transparent 1px),linear-gradient(90deg,color-mix(in srgb,var(--rule) 45%,transparent) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:16px/1.6 var(--body);overflow-wrap:anywhere}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+section{padding-block:48px}
+h1,h2,h3{font-family:var(--display);line-height:1.12;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,6vw,4.2rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.4vw,2.2rem);font-weight:800}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0;max-width:65ch}
+a{color:var(--line)}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.eyebrow{font:600 .78rem/1.2 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--amber-text)}
+.lede{color:var(--ink-2);font-size:1.12rem}
+:focus-visible{outline:2px solid var(--line);outline-offset:3px}
+.skip{position:absolute;left:-999px;top:0;background:var(--panel);color:var(--ink);padding:12px}
+.skip:focus{left:8px;top:8px;z-index:10}
+.top{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;padding-block:16px;border-bottom:1px solid var(--rule)}
+.brand{font:800 1.25rem/1 var(--display);color:var(--ink);text-decoration:none}
+.top nav{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.lang{display:inline-flex;border:1px solid var(--rule);border-radius:4px;background:var(--panel);overflow:hidden}
+.lang a,.lang .cur{font:600 .85rem/1 var(--mono);padding:12px 14px;text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+.lang .cur{background:var(--ink);color:var(--paper)}
+.lang a{color:var(--line)}
+.hero{padding-block:48px 24px;display:grid;grid-template-columns:minmax(0,1fr);gap:24px}
+.install{display:flex;flex-wrap:wrap;gap:10px;align-items:stretch;max-width:760px}
+.install pre{flex:1 1 260px;min-width:0;margin:0;padding:14px 16px;background:var(--ink);color:var(--paper);font:.9rem/1.7 var(--mono);border-radius:4px;overflow-x:auto;white-space:pre}
+.btn{font:600 .95rem/1.2 var(--body);padding:12px 18px;border-radius:4px;border:1px solid var(--ink);background:var(--amber);color:#1a1205;cursor:pointer;min-height:44px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:hover{filter:brightness(1.06)}
+.copystatus{flex-basis:100%;font-size:.9rem;color:var(--ink-2);min-height:1.4em}
+.board{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:16px;margin-top:20px;max-width:900px}
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px}
+.node{font:500 .95rem/1.3 var(--body);padding:12px;border:1.5px solid var(--rule);border-radius:4px;background:var(--paper);color:var(--ink);display:grid;gap:2px;min-width:0;flex:1 1 130px;transition:border-color .2s,background-color .2s,transform .2s}
+.node small{font:.78rem/1.3 var(--mono);color:var(--ink-2)}
+.node.on{border-color:var(--amber);background:var(--amber-soft);transform:translateY(-2px)}
+.node.pass{border-color:var(--pass);background:var(--pass-soft)}
+.node.fail{border-color:var(--fail);background:var(--fail-soft)}
+.caption{min-height:3.4em;border-top:1px solid var(--rule);padding-top:12px}
+.controls{display:flex;flex-wrap:wrap;gap:8px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:14px;margin-top:24px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.card .num{font:600 .78rem/1 var(--mono);color:var(--amber-text)}
+.card p{max-width:none}
+.card .tag{font:600 .78rem/1 var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin-right:6px}
+.card .benefit{color:var(--ink);font-weight:500}
+.proof{font:500 .85rem/1.45 var(--mono);padding:12px;border:1px solid var(--pass);background:var(--pass-soft);color:var(--ink);border-radius:3px}
+.note{color:var(--ink-2);font-size:.92rem;margin-top:18px}
+.steps3{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr));gap:14px;margin-top:24px}
+.step3{background:var(--panel);border:1px solid var(--rule);border-radius:4px;padding:18px;display:grid;gap:8px;align-content:start;min-width:0}
+.step3 .n{font:800 1.6rem/1 var(--display);color:var(--amber-text)}
+.step3 pre{margin:0;background:var(--ink);color:var(--paper);padding:10px 12px;border-radius:3px;font:.85rem/1.5 var(--mono);overflow-x:auto}
+footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 20px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.node.on{transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Bỏ qua, tới nội dung</a>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="./">cto-team</a>
+    <nav aria-label="Ngôn ngữ">
+      <div class="lang"><a href="../" hreflang="en" lang="en">EN</a><span class="cur" aria-current="page">VI</span></div>
+      <a class="btn ghost" href="https://github.com/nhattrung0911/cto-team">GitHub</a>
+    </nav>
+  </header>
+  <main id="main">
+  <div class="hero">
+    <span class="eyebrow">Plugin Claude Code · MIT</span>
+    <h1>Bạn vẫn là CEO.<br>Claude làm CTO của bạn.</h1>
+    <p class="lede">Lên plan một lần, rồi giao việc theo từng gate. Một agent khác kiểm tra mỗi gate, và gate kế tiếp chỉ bắt đầu khi gate này đã pass.</p>
+    <div class="install">
+      <pre id="installCmd">/plugin marketplace add nhattrung0911/cto-team
+/plugin install cto-team@cto-team</pre>
+      <button class="btn" id="copyBtn" type="button">Copy lệnh cài</button>
+      <a class="btn ghost" href="https://github.com/nhattrung0911/cto-team">GitHub</a>
+      <span class="copystatus" id="copyStatus" role="status"></span>
+    </div>
+  </div>
+
+  <section id="gate" aria-labelledby="gateH">
+    <span class="eyebrow">Một gate</span>
+    <h2 id="gateH">Một gate chạy như thế nào</h2>
+    <p class="lede">Worker làm, verifier kiểm tra, fixer sửa, rồi gate pass.</p>
+    <div class="board">
+      <div class="flow">
+        <div class="node pass" data-n="0">Worker<small>Sonnet, mỗi người một brief</small></div>
+        <div class="node pass" data-n="1">Verifier<small>agent riêng, chạy full suite</small></div>
+        <div class="node pass" data-n="2">Fixer<small>sửa phần bị fail</small></div>
+        <div class="node pass" data-n="3">Pass<small>gate kế tiếp được bắt đầu</small></div>
+      </div>
+      <div class="caption" id="caption" role="status" aria-live="polite">Bước 4/4. Gate đã pass. Đến lúc này gate kế tiếp mới bắt đầu.</div>
+      <div class="controls" role="group" aria-label="Điều khiển hoạt ảnh gate">
+        <button class="btn" id="playBtn" type="button" hidden>Tạm dừng</button>
+        <button class="btn ghost" id="nextBtn" type="button" hidden>Bước tiếp</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" aria-labelledby="featH">
+    <span class="eyebrow">Từng tính năng</span>
+    <h2 id="featH">Cài xong, có gì thay đổi</h2>
+    <div class="cards">
+      <article class="card">
+        <span class="num">01</span>
+        <h3>CTO lên plan một lần, giao việc theo từng gate</h3>
+        <p><span class="tag">Trước</span>Một agent nhận cả plan và dần đi lệch hướng</p>
+        <p><span class="tag">Sau</span>Mỗi worker nhận một brief riêng; gate kế tiếp chỉ bắt đầu khi gate này đã pass</p>
+        <p class="benefit">Mỗi worker chỉ lo phần việc nhỏ của mình, và không gate nào chạy sớm.</p>
+      </article>
+      <article class="card">
+        <span class="num">02</span>
+        <h3>Contract-first API</h3>
+        <p><span class="tag">Trước</span>Frontend và backend mỗi bên tự đoán API</p>
+        <p><span class="tag">Sau</span>Một file contract do CTO giữ; worker không được sửa; verifier kiểm tra app theo contract đó</p>
+        <p class="benefit">Hai phía cùng build theo một API, và verifier kiểm tra app theo đúng API đó.</p>
+      </article>
+      <article class="card">
+        <span class="num">03</span>
+        <h3>CTO tự chia team</h3>
+        <p><span class="tag">Trước</span>Bạn tự giao việc cho từng agent; hai agent sửa cùng một file</p>
+        <p><span class="tag">Sau</span>Bạn chọn 1–5 worker Sonnet cho mỗi gate; CTO giao cho mỗi người các file không trùng nhau</p>
+        <p class="benefit">Bạn chỉ chọn quy mô team; CTO giữ các worker không đụng vào file của nhau.</p>
+      </article>
+      <article class="card">
+        <span class="num">04</span>
+        <h3>Verifier độc lập ở mọi gate</h3>
+        <p><span class="tag">Trước</span>“test pass rồi”, do chính agent viết ra test nói</p>
+        <p><span class="tag">Sau</span>Một agent riêng chứng minh từng acceptance criterion, chạy full suite, và cố tình phá một dòng code mà test bắt buộc phải bắt được</p>
+        <p class="benefit">Việc kiểm tra đến từ một agent không phải người viết code.</p>
+      </article>
+      <article class="card">
+        <span class="num">05</span>
+        <h3>Không test giả, không lỗi 500</h3>
+        <p><span class="tag">Trước</span>assert True lọt qua; input quá lớn làm app crash</p>
+        <p><span class="tag">Sau</span>Test giả làm gate fail; mọi con số đều có test overflow</p>
+        <p class="benefit">Test giả bị chặn ngay ở gate, và mọi con số đều được test overflow.</p>
+        <p class="proof">v0.1 bị crash với số 20 chữ số; đã sửa từ v0.2</p>
+      </article>
+      <article class="card">
+        <span class="num">06</span>
+        <h3>Opus review theo đợt</h3>
+        <p><span class="tag">Trước</span>Lỗi nằm giữa các tính năng thì người dùng mới phát hiện</p>
+        <p><span class="tag">Sau</span>Cứ 3–4 gate, Opus review cả đợt</p>
+        <p class="benefit">Opus review nhiều gate cùng lúc, thay vì từng gate riêng lẻ.</p>
+        <p class="proof">Tìm ra một race condition thật mà các check theo từng gate bỏ sót</p>
+      </article>
+      <article class="card">
+        <span class="num">07</span>
+        <h3>Tiết kiệm token</h3>
+        <p><span class="tag">Trước</span>Agent “thành viên” sống lâu cứ phình to dần</p>
+        <p><span class="tag">Sau</span>Mỗi agent chỉ chạy một lần và bắt đầu nhỏ gọn; Sonnet làm phần lớn việc</p>
+        <p class="benefit">Agent nhỏ, chạy một lần giúp chi phí token của bạn thấp.</p>
+        <p class="proof">12k vs 42k start context; 0.9M vs 3.8M token mỗi agent</p>
+      </article>
+      <article class="card">
+        <span class="num">08</span>
+        <h3>ripgrep thay cho grep</h3>
+        <p><span class="tag">Trước</span>grep đệ quy chậm, kết quả lộn xộn</p>
+        <p><span class="tag">Sau</span>Một hook hướng agent dùng ripgrep (nhanh hơn, tôn trọng .gitignore)</p>
+        <p class="benefit">Tìm kiếm nhanh hơn và bỏ qua những gì .gitignore loại trừ.</p>
+      </article>
+      <article class="card">
+        <span class="num">09</span>
+        <h3>Làm tiếp sau khi reset</h3>
+        <p><span class="tag">Trước</span>Reset context = làm lại hoặc mất việc</p>
+        <p><span class="tag">Sau</span>Trạng thái nằm trong docs/cto/; việc giao được tiếp tục từ checkpoint gần nhất</p>
+        <p class="benefit">Reset không làm bạn mất phần việc đã xong.</p>
+      </article>
+      <article class="card">
+        <span class="num">10</span>
+        <h3>Báo cáo người không code cũng đọc được</h3>
+        <p><span class="tag">Trước</span>Một đoạn chat dài</p>
+        <p><span class="tag">Sau</span>Một báo cáo HTML: cái gì chạy được, cách thử, tech stack, sơ đồ kiến trúc, những chỗ còn thiếu</p>
+        <p class="benefit">Bạn đọc một trang thay vì lướt cả đoạn chat.</p>
+      </article>
+    </div>
+    <p class="note">Chất lượng tham chiếu: trên một app test gồm 10 task, mọi version đều pass 14/14 hidden test.</p>
+  </section>
+
+  <section id="start" aria-labelledby="startH">
+    <h2 id="startH">Bắt đầu trong 3 bước</h2>
+    <div class="steps3">
+      <div class="step3"><span class="n">1</span><h3>Cài đặt</h3><p>Dán hai dòng này vào Claude Code.</p>
+        <pre>/plugin marketplace add nhattrung0911/cto-team
+/plugin install cto-team@cto-team</pre></div>
+      <div class="step3"><span class="n">2</span><h3>Mô tả</h3><p>Nói với Claude bạn muốn làm gì. CTO lên plan cùng bạn một lần.</p></div>
+      <div class="step3"><span class="n">3</span><h3>Chọn team</h3><p>Chọn 1–5 worker Sonnet cho mỗi gate. Việc được giao theo từng gate, rồi bạn đọc một báo cáo.</p></div>
+    </div>
+  </section>
+  </main>
+  <footer>
+    <span>Giấy phép MIT. Ghi công: <a href="https://github.com/obra/superpowers">obra/superpowers</a></span>
+    <a href="https://github.com/nhattrung0911/cto-team">Repository</a>
+    <span>Phiên bản 0.4.0</span>
+  </footer>
+</div>
+<script>
+(function(){
+var caps=["Bước 1/4. Mỗi worker nhận một brief và các file riêng của mình.","Bước 2/4. Verifier, một agent riêng, kiểm tra từng acceptance criterion.","Bước 3/4. Nếu có gì fail, fixer sửa và verifier kiểm tra lại.","Bước 4/4. Gate đã pass. Đến lúc này gate kế tiếp mới bắt đầu."],L={"pause":"Tạm dừng","play":"Chạy","copied":"Đã copy.","fallback":"Không copy được. Đoạn lệnh đã được chọn sẵn, hãy bấm Ctrl+C."};
+var nodes=[].slice.call(document.querySelectorAll('[data-n]')),cap=document.getElementById('caption'),
+play=document.getElementById('playBtn'),next=document.getElementById('nextBtn'),timer=null,i=3;
+function show(k){i=k;nodes.forEach(function(n,j){n.className='node';
+ if(k===3||j<k){n.classList.add('pass');}
+ else if(j===k){n.classList.add('on');}
+ if(k===2&&j===1){n.className='node fail';}});
+ cap.textContent=caps[k];}
+function start(){if(timer)return;timer=setInterval(function(){show((i+1)%4);},2200);play.textContent=L.pause;}
+function stop(){if(timer){clearInterval(timer);timer=null;}play.textContent=L.play;}
+var reduce=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+play.addEventListener('click',function(){if(timer){stop();}else{if(i===3)show(0);start();}});
+next.addEventListener('click',function(){stop();show((i+1)%4);});
+play.hidden=false;next.hidden=false;
+if(reduce){stop();show(3);}else{show(0);start();}
+var cb=document.getElementById('copyBtn'),pre=document.getElementById('installCmd'),st=document.getElementById('copyStatus');
+function sel(){var r=document.createRange();r.selectNodeContents(pre);var s=window.getSelection();s.removeAllRanges();s.addRange(r);}
+function fb(){try{sel();}catch(e){}st.textContent=L.fallback;}
+cb.addEventListener('click',function(){
+ try{
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+   navigator.clipboard.writeText(pre.textContent).then(function(){st.textContent=L.copied;},fb);
+  }else{fb();}
+ }catch(e){fb();}
+});
+})();</script>
+</body>
+</html>
