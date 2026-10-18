@@ -14,3 +14,6 @@ Ruling: README.md Mermaid uses quoted edge labels (-->|"fail"|) — valid GitHub
 Ruling: favicon.ico 404 in the console does not fail G1-T1#1 — it is the browser's automatic request, not a page error; moved to techdebt — cost if wrong: one inline favicon line.
 G2 PASS rounds=0 — tests/docs.test.mjs, 7 tests (6 planned + order-helper self-check); suite 99/99; ownership check clean.
 Ruling: keep the worker's optional DOCS_TEST_ROOT env var in tests/docs.test.mjs (defaults to repo root) — lets the tests be proven against a mutated copy without touching real files; no effect on npm test — cost if wrong: a few lines to drop.
+REVIEW-1 PASS rounds=1 — Opus found 1 Important (pages never showed /cto-team:plan, /clear, /cto-team:deliver, so a visitor could not start a delivery); fixed in both pages + test 4b; 7 Minor to techdebt.md.
+Ruling: no new gate after REVIEW-1 — no Critical finding open; the public-docs/ finding is not a privacy risk (the repo is public, the files hold no secrets) and is handled at deploy time by the CEO — cost if wrong: internal notes visible on the site until a deploy filter is set.
+Checkpoint: next FINAL; open: none (7 Minor in techdebt.md).

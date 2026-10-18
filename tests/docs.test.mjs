@@ -171,3 +171,13 @@ test('6. banned claim: no "SDD" with "miss" in a sentence, and no SDD at all', (
     assert.doesNotMatch(text, /\bSDD\b/, `${f}: contains the word SDD`);
   }
 });
+
+test("4b. landing pages show the real start commands in order", () => {
+  for (const f of [FILES.enPage, FILES.viPage]) {
+    const html = read(f);
+    const a = html.indexOf("/cto-team:plan");
+    const b = html.indexOf("/clear", a);
+    const c = html.indexOf("/cto-team:deliver", b);
+    assert.ok(a >= 0 && b > a && c > b, `${f}: need /cto-team:plan, /clear, /cto-team:deliver in order`);
+  }
+});

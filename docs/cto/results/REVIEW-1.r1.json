@@ -1,0 +1,1 @@
+﻿{"verdict":"PASS","detail":"npm test 100/100; F1 fixed with regression test 4b; scrollWidth 360 on both pages; only favicon 404 in console"}

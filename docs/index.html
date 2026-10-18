@@ -228,8 +228,11 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
       <div class="step3"><span class="n">1</span><h3>Install</h3><p>Paste these two lines into Claude Code.</p>
         <pre>/plugin marketplace add nhattrung0911/cto-team
 /plugin install cto-team@cto-team</pre></div>
-      <div class="step3"><span class="n">2</span><h3>Describe</h3><p>Tell Claude what you want to build. The CTO plans it with you once.</p></div>
-      <div class="step3"><span class="n">3</span><h3>Pick your team</h3><p>Choose 1–5 Sonnet workers per gate. Delivery runs gate by gate, then you read one report.</p></div>
+      <div class="step3"><span class="n">2</span><h3>Describe</h3><p>Tell Claude what you want to build. The CTO plans it with you once.</p>
+        <pre>/cto-team:plan</pre></div>
+      <div class="step3"><span class="n">3</span><h3>Pick your team</h3><p>Clear the chat, then hand over the plan. Choose 1–5 Sonnet workers per gate. Delivery runs gate by gate, then you read one report.</p>
+        <pre>/clear
+/cto-team:deliver &lt;plan&gt;</pre></div>
     </div>
   </section>
   </main>

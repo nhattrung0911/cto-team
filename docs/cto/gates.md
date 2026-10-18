@@ -11,7 +11,7 @@ Spec goals: 1 bilingual landing pages + switch + hreflang · 2 page structure (h
 |------|-------|-------|-------|------------|----------|--------|
 | G1 | T1, T2, T3 | docs/index.html; docs/vi/index.html; docs/landing-draft.html (delete); README.md; README.vi.md | 1, 2, 3, 4 | - | no | pass |
 | G2 | T4 | tests/docs.test.mjs | 1, 2, 3, 4 | G1 | no | pass |
-| REVIEW-1 | - | whole branch | 1, 2, 3, 4 | G2 | yes | running |
+| REVIEW-1 | - | whole branch | 1, 2, 3, 4 | G2 | yes | pass |
 | FINAL | - | whole branch | 1, 2, 3, 4 | REVIEW-1 | yes | todo |
 
 Coverage: every goal has a gate; every gate serves a goal.

@@ -1,0 +1,100 @@
+{
+  "gate": "REVIEW-1",
+  "range": "8a194ca76a4a8e2dcec670a93c3ae7f33663aa3b..HEAD",
+  "verdict": "fail",
+  "summary": "Pages, READMEs and tests match the contract shapes and npm test is green (99/99). Browser checks passed: no horizontal scroll at 320px or 375px (EN and VI), WCAG AA contrast in light, dark and data-theme overrides once the 0.2s transition has finished, no text under 12px, a static final state under reduced motion, Pause and Next work by mouse and keyboard, the copy fallback works when the clipboard is missing, rejects or throws, the language switch works both ways (also from /index.html and /vi without a slash), and there are no page errors. One Important finding: the landing pages' 'Start in 3 steps' never names /cto-team:plan or /cto-team:deliver, and the deliver skill only starts on an explicit request, so a visitor who follows the page cannot start delivery. The rest are Minor: EN/VI README drift, test gaps against contract and anti-goal items, and internal docs being served from the site root.",
+  "checks_run": [
+    "npm test -> 99 pass, 0 fail",
+    "python -m http.server 8080 --directory docs; Playwright at 320/375px, light/dark/data-theme, reduced motion, clipboard stubs, language switch",
+    "Mutation probes of tests/docs.test.mjs via DOCS_TEST_ROOT on temp copies (temp files deleted)",
+    "NFC/BOM check of all four files (all NFC, no BOM)"
+  ],
+  "findings": [
+    {
+      "id": 1,
+      "severity": "Important",
+      "file": "docs/index.html:225-233 (same in docs/vi/index.html:225-233)",
+      "issue": "'Start in 3 steps' never tells the user to run /cto-team:plan, /clear or /cto-team:deliver; the deliver skill only starts on an explicit request, so a visitor who follows the page cannot start delivery.",
+      "evidence": "rg -n '/cto-team:(plan|deliver)' docs/index.html docs/vi/index.html -> no matches. Step 2: 'Tell Claude what you want to build. The CTO plans it with you once.' Step 3: 'Choose 1–5 Sonnet workers per gate. Delivery runs gate by gate...'. skills/deliver/SKILL.md description: 'Use only when the user explicitly asks to deliver ... (for example \"/cto-team:deliver ...\") ... Not for general coding requests.' skills/plan/SKILL.md: if superpowers is installed and the user did not ask for this skill, use superpowers brainstorming instead. README.md:59-61 and README.vi.md 'Cách dùng' give the real 3 commands, so the landing and README steps disagree.",
+      "steps_to_reproduce": [
+        "Open http://localhost:8080/ and read 'Start in 3 steps'.",
+        "Run rg -n '/cto-team:' docs/index.html docs/vi/index.html: only the <title>/og:title 'cto-team: ...' prefix matches, no command.",
+        "Compare with skills/deliver/SKILL.md frontmatter: delivery only starts on an explicit /cto-team:deliver request."
+      ],
+      "fix": "Make steps 2 and 3 on both pages show the commands (`/cto-team:plan` or describe with superpowers, `/clear`, `/cto-team:deliver <plan>`), matching the README 'Use' section."
+    },
+    {
+      "id": 2,
+      "severity": "Minor",
+      "file": "tests/docs.test.mjs:117-146",
+      "issue": "The consistency tests miss several items the contract says G2's tests check: the x-default alternate, the canonical link, aria-current on the current language, NFC source, and no feature names in <title>.",
+      "evidence": "Probe (temp copy, DOCS_TEST_ROOT): removing x-default + canonical + aria-current from docs/index.html -> pass=7 fail=0; VI page saved as NFD -> pass=7 fail=0 (read() normalizes the file before comparing); adding 'CTO plans once, then delivers gate by gate' to <title> -> pass=7 fail=0. Control: removing the hreflang=vi alternate -> fail=1.",
+      "steps_to_reproduce": [
+        "Copy docs/index.html, docs/vi/index.html, README.md, README.vi.md, .claude-plugin/plugin.json into a temp dir with the same layout.",
+        "Delete the x-default and canonical <link> lines and aria-current=\"page\" from the copy of docs/index.html.",
+        "DOCS_TEST_ROOT=<tmp> node --test tests/docs.test.mjs -> all 7 pass."
+      ],
+      "fix": "Add assertions for the x-default and canonical hrefs, aria-current on the current language, raw-text NFC (text === text.normalize('NFC') before normalizing), and no feature names inside <title>/meta."
+    },
+    {
+      "id": 3,
+      "severity": "Minor",
+      "file": "tests/docs.test.mjs:88-106",
+      "issue": "Nothing guards the spec anti-goal 'English and Vietnamese pages saying different things' or the README table shape; the version check is a loose substring match.",
+      "evidence": "Probe: VI page proof 7 changed to '12k vs 24k ... 9M vs 3.8M' and '1–5 worker' -> '1–9 worker' -> pass=7 fail=0; VI proof point 6 deleted -> pass=7; README.md table row 2 cut to one cell -> pass=7; 'Version 0.4.0' -> 'Version 10.4.01' -> pass=7.",
+      "steps_to_reproduce": [
+        "In a temp copy, edit docs/vi/index.html so it reads '12k vs 24k start context; 9M vs 3.8M token mỗi agent'.",
+        "DOCS_TEST_ROOT=<tmp> node --test tests/docs.test.mjs -> all pass."
+      ],
+      "fix": "Compare EN vs VI pages for the same card count, the same proof-point count and the same number tokens (12k, 42k, 0.9M, 3.8M, 20, 1–5, 3–4, 14/14); check README tables have 10 rows with 3 cells each; match the version with a word boundary."
+    },
+    {
+      "id": 4,
+      "severity": "Minor",
+      "file": "README.vi.md:62-77",
+      "issue": "The VI README leaves out facts the EN README states: the 'not a security boundary' ripgrep hook note, the 'instruction boundary, not a permission sandbox' note on lean agents, the olsenbrands/fable-foreman credit with the NOTICE pointer, and half the settings JSON.",
+      "evidence": "README.md:80,81,86 hold those notes and the credit; rg 'security|sandbox|fable|NOTICE|WORKFLOW_MAX|workflowSizeGuideline' README.vi.md -> no matches. VI settings JSON has 2 env keys; EN has 4 plus workflowSizeGuideline.",
+      "steps_to_reproduce": [
+        "rg -n 'security boundary|instruction boundary|fable' README.md -> 3 lines.",
+        "rg -n 'security|sandbox|fable|NOTICE' README.vi.md -> none."
+      ],
+      "fix": "Translate the two safety notes and the fable-foreman/NOTICE credit into README.vi.md, and use the same settings JSON as README.md."
+    },
+    {
+      "id": 5,
+      "severity": "Minor",
+      "file": "README.vi.md:35-40",
+      "issue": "The VI Mermaid gate has unlabeled edges B --> C (Fixer) and B --> D (Pass), so it does not show that the fixer runs on fail and pass happens on pass. The EN diagram labels both edges.",
+      "evidence": "README.vi.md:37 'B --> C[\"Fixer\"]', :39 'B --> D[\"Pass: gate kế tiếp\"]' versus README.md 'B -->|\"fail\"| C', 'B -->|\"pass\"| D'.",
+      "steps_to_reproduce": ["Open README.vi.md on GitHub: the verifier node has two unlabeled outgoing arrows."],
+      "fix": "Use B -->|\"fail\"| C and B -->|\"pass\"| D in README.vi.md."
+    },
+    {
+      "id": 6,
+      "severity": "Minor",
+      "file": "docs/vi/index.html:182",
+      "issue": "VI page proof point 5 drops 'amount' ('số 20 chữ số'), while README.vi.md:27 says 'số tiền 20 chữ số' and the spec says '20-digit amount'.",
+      "evidence": "docs/vi/index.html:182 'v0.1 bị crash với số 20 chữ số; đã sửa từ v0.2' versus README.vi.md:27 '(v0.1 crash với số tiền 20 chữ số; sửa từ v0.2)'.",
+      "steps_to_reproduce": ["rg -n 'số 20|số tiền' docs/vi/index.html README.vi.md"],
+      "fix": "Write 'v0.1 bị crash với số tiền 20 chữ số; đã sửa từ v0.2' on the VI page."
+    },
+    {
+      "id": 7,
+      "severity": "Minor",
+      "file": "docs/index.html:136 (same in docs/vi/index.html:136)",
+      "issue": "The diagram autoplays forever and writes into a polite live region (role=status, aria-live) every 2.2s, so screen-reader users get an announcement every 2.2s until they find Pause.",
+      "evidence": "Playwright with no reduced-motion preference: #caption went Step 1 -> 2 -> 3 -> 4 -> 1 over 5 reads 2.3s apart, with no user action.",
+      "steps_to_reproduce": ["Open http://localhost:8080/ with a screen reader: the caption is announced every 2.2s."],
+      "fix": "Set aria-live only while the user steps with Next or Play, or set aria-live=\"off\" during autoplay and 'polite' after a user action."
+    },
+    {
+      "id": 8,
+      "severity": "Minor",
+      "file": "docs/ (site root)",
+      "issue": "The site root is docs/, so the CTO's internal files (docs/cto/*, docs/contract, docs/specs, docs/plans, docs/superpowers) are served publicly next to the landing page, and there is no robots.txt or sitemap.xml for the SEO goal.",
+      "evidence": "With python -m http.server 8080 --directory docs: /cto/ledger.md 200, /cto/gate.js 200, /contract/contract.md 200, /specs/2026-10-18-landing-v2.md 200, /cto/results/G2.json 200; /robots.txt 404, /sitemap.xml 404, /favicon.ico 404.",
+      "steps_to_reproduce": ["Start the server, then curl -I http://localhost:8080/cto/ledger.md -> 200."],
+      "fix": "Have the CTO decide: publish only index.html and vi/ (for example a Pages output folder or _redirects/_headers rules), and add robots.txt and sitemap.xml listing / and /vi/."
+    }
+  ]
+}

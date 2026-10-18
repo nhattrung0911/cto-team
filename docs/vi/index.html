@@ -228,8 +228,11 @@ footer{padding-block:32px 48px;color:var(--ink-2);font-size:.92rem;border-top:1p
       <div class="step3"><span class="n">1</span><h3>Cài đặt</h3><p>Dán hai dòng này vào Claude Code.</p>
         <pre>/plugin marketplace add nhattrung0911/cto-team
 /plugin install cto-team@cto-team</pre></div>
-      <div class="step3"><span class="n">2</span><h3>Mô tả</h3><p>Nói với Claude bạn muốn làm gì. CTO lên plan cùng bạn một lần.</p></div>
-      <div class="step3"><span class="n">3</span><h3>Chọn team</h3><p>Chọn 1–5 worker Sonnet cho mỗi gate. Việc được giao theo từng gate, rồi bạn đọc một báo cáo.</p></div>
+      <div class="step3"><span class="n">2</span><h3>Mô tả</h3><p>Nói với Claude bạn muốn làm gì. CTO lên plan cùng bạn một lần.</p>
+        <pre>/cto-team:plan</pre></div>
+      <div class="step3"><span class="n">3</span><h3>Chọn team</h3><p>Xóa chat, rồi giao plan. Chọn 1–5 worker Sonnet cho mỗi gate. Việc được giao theo từng gate, rồi bạn đọc một báo cáo.</p>
+        <pre>/clear
+/cto-team:deliver &lt;plan&gt;</pre></div>
     </div>
   </section>
   </main>
