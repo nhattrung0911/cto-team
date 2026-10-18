@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.5.2');
+  assert.equal(m.version, '0.5.3');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -145,7 +145,7 @@ test('lean plugin agents with role tool lists; the checker cannot edit', () => {
 
 test('v0.5: the CTO leads with visible agents and keeps only the quality guardrails', () => {
   has('skills/deliver/SKILL.md', [
-    'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background',          // visible team the CTO leads
+    'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background', 'default playbook, not a script',          // visible team the CTO leads
     'cto-judge.mjs', 'independently verified', 'GAPS', 'UNPROVEN:', '--carried',      // nothing counts until judged
     'shared resources run one at a time', 'its own port and output folder', 'once per verification', 'one owner per file',                        // no stepping on each other
     'docs/contract/', 'test-policy.md', 'model: "opus"', 'REVIEW-<k>', 'GOAL#<n>',     // contract, tests, reviews, final
