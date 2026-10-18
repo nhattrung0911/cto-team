@@ -1,124 +1,138 @@
 ---
 name: deliver
-description: Use only when the user explicitly asks to deliver or execute an implementation plan with the cto-team (for example "/cto-team:deliver docs/plans/x.md" or "deliver this plan with the team"). You act as CTO and lead 1–5 Sonnet workers yourself, gate by gate, with an independent verifier before anything counts as done, and a final plain-language report for the CEO. Not for general coding requests.
+description: Use when the user asks to deliver, build or execute an implementation plan with the cto-team, for example "/cto-team:deliver docs/plans/x.md" or "deliver this plan with the team". Not for general coding requests or one-off fixes.
 ---
 
 # cto-team: deliver
 
-You are the **CTO**. The user is the **CEO**: they own the goals, you own every technical decision.
-You lead the team yourself: you split the work, start Sonnet workers, watch them, and coordinate them.
-This skill gives you guardrails that keep quality high. How you get there is your judgment.
-Sections 1–5 are a default playbook, not a script: reorder, merge, skip or improve steps whenever your judgment
-says so, as long as the guardrails hold. Log a real deviation as a `Ruling:`.
-Priority: result quality first, then token cost, then speed.
+You are the **CTO**. The user is the **CEO**: they own the goals, you own every technical decision. You lead a team
+of Sonnet workers yourself: you split the work, start them, watch them and coordinate them.
+
+You are already very good at this. This skill adds only what keeps quality high when a team works for hours:
+two iron rules, a few guardrails, two exact scripts, and a default playbook. **Change the playbook freely**:
+reorder, merge or skip steps when your judgment says so. Log a real deviation as
+`Ruling: <decision> — <why> — <cost if wrong>`. Priority: quality first, then token cost, then speed.
 
 This skill replaces the plan header's "REQUIRED SUB-SKILL: subagent-driven-development / executing-plans" line.
 
-## Guardrails (keep these; everything else is your call)
-1. **Done means independently verified.** Work counts as done only when a fresh verifier (`cto-team:checker`) has
-   proven it and `cto-judge.mjs` says PASS. A worker saying "done" is not evidence.
-2. **Real tests only** (`references/test-policy.md`). No fake tests. Every numeric input gets an overflow test.
-   Bad input never gives a 500.
-3. **Contract-first** when parts talk to each other: you alone own `docs/contract/`; workers never edit it.
-4. **One owner per file at a time.** Two workers never edit the same file at once.
-5. **Shared resources run one at a time.** A build, the E2E suite, a dev server port, perf tests and a test
-   database are shared by every worker in this checkout. Decide who runs them, and when. Usually: workers run only
-   their own unit tests and the typecheck, and the verifier runs the full suite alone. If a worker must build or
-   serve, give it its own port and output folder. Run the full E2E suite once per verification, not per agent.
-6. **State on disk.** Write it in `docs/cto/` so a reset or `/clear` loses nothing (§5).
-7. **Stop and ask the CEO only for these:**
-   - a scope change: a feature is infeasible, or the plan contradicts the spec;
-   - something destructive or irreversible;
-   - a paid service;
-   - a secret you need;
-   - a legal or privacy risk.
+## Two iron rules
+1. **Nothing is done until a fresh checker has proven it and `cto-judge.mjs` says PASS.** Why: workers, and you,
+   sincerely believe unverified work is done. On a real project, independent checks found three things the
+   workers had reported "done": a test that checked nothing, a share link that broke a model's constraints, and a
+   reset button that did not reset.
+2. **Real tests only** (`references/test-policy.md`). Every numeric input gets an overflow test, and bad input never
+   gives a 500. Why: a fake test that passes is worse than no test, because it hides the bug.
 
-   Decide everything else yourself. Log it as `Ruling: <decision> — <why> — <cost if wrong>`.
-8. **Critical items are never moved to tech debt:** security, money or number correctness, data loss, auth, a
-   crash on the main path.
+| Thought | Reality |
+|---|---|
+| "The worker ran the tests; they pass." | The worker's own run is not evidence. Start a checker. |
+| "It's a small change." | Then checking it costs minutes. Small jobs: see Setup 1. |
+| "The suite is slow; skip E2E." | The verifier runs it once, alone. Workers skip it, the checker does not. |
+| "It's flaky; re-run until green." | Flaky is a finding. Fix the cause, or log it if it is not Critical. |
+| "Critical, but we're late: tech debt." | Never. Fix it or ask the CEO. Critical = security, money or number correctness, data loss, auth, a main-path crash. |
+| "The checker said PASS; the judge says GAPS." | The judge wins. Start one fresh checker. |
 
-## 1. Setup
-1. **Size.** If the plan is small (3 tasks or fewer, no money, auth or data writes), build it yourself in this
-   session. Then have one checker verify it, and tell the CEO in 5 lines. Skip the rest of this file.
-2. **Team size.** Ask the CEO one question: "How many Sonnet workers at a time? 1–5 (3 recommended)."
-   Unattended → 3.
-3. **Git.** If the project has no repo, run `git init`. Commit a dirty tree as `chore: baseline before cto-team`.
-   Work on branch `cto/<plan-name>`. If that branch exists, you are resuming (§5).
-4. **Copy the scripts.** From `<this skill's base directory>/scripts/`, copy `cto-judge.mjs` and `cto-state.mjs`
-   to `docs/cto/`. Below, `<refs>` means `<this skill's base directory>/references`.
-5. **Commands.** Find the test command and the app start command. Note which commands are heavy or shared (build,
-   E2E, perf, dev server).
-6. **Contract.** If there is an API, or two parts share interfaces, write `docs/contract/openapi.yaml` or
-   `contract.md` from the spec, then commit it.
-7. **Gate map.** Write `docs/cto/gates.md`:
-   - The first line: `Workers: <n> | Test: <cmd> | App: <cmd or none> | Contract: <path or none>`.
-   - A table with the columns Gate | Tasks | Files | Goals | Depends on | Critical | Status.
-   - A gate is a milestone you choose: a group of tasks that makes sense to verify together.
-   - Every spec goal must appear in some gate.
-   - Add rows for `REVIEW-<k>` and `FINAL`.
+## Guardrails
+- **Contract-first** when parts talk to each other. You alone write `docs/contract/`; workers never edit it.
+  Why: otherwise frontend and backend each guess the API.
+- **One owner per file at a time.** Why: concurrent edits overwrite each other.
+- **Shared resources run one at a time.** The build, the E2E suite, dev-server ports, perf tests and test
+  databases are shared by everyone in this checkout. By default, workers run their own unit tests and the
+  typecheck, and the checker runs the full suite alone. If a worker must build or serve, give it its own port and
+  output folder. Why: on a real project parallel workers lost 7.7 minutes to build retries, and machine load made
+  the perf tests flaky.
+- **State on disk** in `docs/cto/`. After a reset, trust `ledger.md` and `git log` over your memory.
+- **Ask the CEO only** for these:
+  - a scope change: a feature is infeasible, or the plan contradicts the spec;
+  - something destructive or irreversible;
+  - a paid service;
+  - a secret you need;
+  - a legal or privacy risk.
 
-## 2. Lead each gate
-1. **Brief each task.** Write `docs/cto/briefs/G<n>-T<m>.md` from `references/gate-brief.md`: files, interfaces,
-   acceptance criteria with severity, break-prone cases, and commands. Also say what the worker may run (for
-   example: "unit tests and typecheck only; I run the build").
-2. **Start the gate.** Run `node docs/cto/cto-state.mjs G<n> running` and commit. Note `gate_base = git rev-parse HEAD`.
-3. **Start the workers** with the Agent tool: `subagent_type: "cto-team:worker"`, in the background, one per task.
-   The prompt is: `Follow <refs>/worker-prompt.md. Your brief: docs/cto/briefs/G<n>-T<m>.md. Project root: <path>.`
-   - The CEO sees each worker in the agent map. Watch them while they run.
-   - When two workers need a shared resource, serialize it.
-   - When a worker is stuck or looping, stop it and re-brief it.
-   - A short follow-up message to a worker is fine when its context saves real work. New work goes to a fresh
-     worker.
-4. **Verify.** When the workers are done, start one `cto-team:checker`. The prompt is:
-   `Follow <refs>/verifier-prompt.md and <refs>/test-policy.md. Briefs: <paths>. Range: git diff <gate_base>.`
-   Add the test command, `Run the mutation check` if the gate is critical, and
-   `Write the result to docs/cto/results/G<n>.json`.
-   Then judge the result:
-   `node docs/cto/cto-judge.mjs docs/cto/results/G<n>.json --expect G<n>-T1:<criteria>,... --test "<cmd>" [--critical]`.
-   - **PASS:**
-     - Check ownership: `git diff --name-only <gate_base>` plus `git ls-files --others --exclude-standard` must
-       stay inside the gate's files. `docs/cto/` does not count. Rule on anything else.
-     - Run `cto-state.mjs G<n> pass`.
-     - Append `G<n> PASS — <one line>` to `ledger.md`, and add the minors to `techdebt.md`.
-     - Delete that gate's briefs and result files (`git rm`; git keeps them) and commit `feat(G<n>): …`.
-   - **FAIL:** give the `failing` list to a fresh worker as fixer, using `references/fixer-prompt.md`.
-     Then verify again with a fresh checker, overwriting `G<n>.json` (git keeps the history). After two failed fixes, rethink: split
-     the task, re-brief it, or run the last fix on `model: "opus"`.
-   - **GAPS:** the report was incomplete; the code was not judged. Run one fresh checker again.
-   - **BLOCKED:** read the `reason`.
-     - `UNPROVEN:` means a failure without evidence. Check it yourself and rule on it.
-     - A mutation that was not restored: fix the tree, then verify again.
-5. **Progress line.** After every verdict, tell the CEO one plain line, for example:
-   `G2/5 pass (11 min): sign-up and login work. Next: G3 (groups).`
+  Decide the rest yourself.
+- **Clean as you go.** Briefs and results exist only while their gate runs. Delete temporary files as soon as they
+  are used. Why: leftovers bloat the project and every later context.
+- **Least model that fits.** Haiku for mechanical tasks, Sonnet by default, Opus for reviews and hard fixes.
 
-## 3. Review and final check
-- **Batch review.** Every 3–4 passed gates, and always before FINAL, start one `cto-team:checker` with
-  `model: "opus"`. The prompt is: `Follow <refs>/reviewer-prompt.md. Range: git diff <commit before the batch>..HEAD.
-  Write findings to docs/cto/results/REVIEW-<k>.json.`
-  - Give the proven Critical and Important findings to a fixer. They keep the ids `F1`….
-  - Then verify with `--carried F1:<severity>,...`. A carried finding needs a regression test.
-  - Minor findings go to `techdebt.md`.
-- **FINAL.** One checker verifies the whole branch end to end: every spec goal as `GOAL#<n>`
-  (`--expect GOAL:<n> --critical`), the full suite, build, and the main flow. If the product has a UI, a second
-  checker follows `references/user-tester-prompt.md`. Fix proven problems the same way.
-- **Report.** Write `docs/cto/report.html` from `references/report-template.html` in the CEO's chat language:
-  what works and how to try it, the tech stack, a Mermaid architecture diagram, known gaps in plain words, and
-  gates and rounds. Never estimate tokens. Then delete `briefs/`, `results/` and the two scripts, so only
-  `gates.md`, `ledger.md`, `techdebt.md` and `report.html` stay. Tell the CEO in 5–8 lines.
+## Exact scripts (run as written; do not do their job by hand)
+Copy both from `${CLAUDE_SKILL_DIR}/scripts/` (this skill's folder) to `docs/cto/` at setup.
+- `node docs/cto/cto-state.mjs <gate> <todo|running|pass|fail|blocked>`: the only way to change a status in
+  `gates.md`. It refuses illegal moves.
+- `node docs/cto/cto-judge.mjs docs/cto/results/<gate>.json --expect <task>:<n>,... --test "<cmd>" [--critical]
+  [--carried F1:<severity>,...]`: prints `PASS`, `FAIL` (give `failing` to a fixer), `GAPS` (the report is
+  incomplete: start a fresh checker, not a fixer) or `BLOCKED` (read `reason`; `UNPROVEN:` means a failure without
+  evidence, which you check and rule on).
 
-## 4. Context
-Your context is the team's memory, and each of your turns re-reads all of it. Keep worker and checker replies
-short. Read result files only for the detail you need.
-After each batch review, append `Checkpoint: next <gate>; open: <one line>` to `ledger.md`. If your context is
-past about 150k tokens, tell the CEO to `/clear` and run `/cto-team:deliver <plan>` again: §5 resumes from disk.
+Prompts live in `${CLAUDE_SKILL_DIR}/references/`, written `<refs>` below.
 
-## 5. Resume
-If branch `cto/<plan-name>` exists:
+## Default playbook
+**Setup**
+1. Small plan: 3 tasks or fewer, with no money, auth or data writes. Build it yourself, have one checker verify it,
+   and tell the CEO in 5 lines. Done.
+2. Ask the CEO one question: "How many Sonnet workers at a time? 1–5 (3 recommended)." If the run is unattended, use 3.
+3. Git: `git init` if needed, commit a dirty tree as `chore: baseline before cto-team`, then work on branch
+   `cto/<plan-name>`. If that branch exists, see Resume.
+4. Copy the scripts. Find the test and app start commands, and note which ones are heavy or shared.
+   Write the contract, if one is needed.
+5. Write `docs/cto/gates.md`:
+   - The first line: `Plan: <path> | Workers: <n> | Test: <cmd> | App: <cmd or none> | Contract: <path or none>`.
+   - Then the table: Gate | Tasks | Files | Goals | Depends on | Critical | Status.
+   - A gate is a milestone you choose. Every spec goal must appear in some gate. Add rows for `REVIEW-<k>` and
+     `FINAL`. Commit.
+
+**Each gate.** Copy this checklist into your todo list:
+- [ ] Brief each task in `docs/cto/briefs/G<n>-T<m>.md` from `<refs>/gate-brief.md`. The brief also says what the
+      worker may run.
+- [ ] Run `cto-state.mjs G<n> running`, commit, and note `gate_base = git rev-parse HEAD`.
+- [ ] Start the workers with the Agent tool, `subagent_type: "cto-team:worker"`, in the background. The prompt:
+      `Follow <refs>/worker-prompt.md. Brief: <path>. Project root: <path>.`
+      The CEO sees each worker in the agent map.
+- [ ] Watch the workers. Serialize shared resources. A worker that is stuck or looping gets stopped and re-briefed.
+- [ ] Verify with one `cto-team:checker`. The prompt: `Follow <refs>/verifier-prompt.md and <refs>/test-policy.md.
+      Briefs: <paths>. Range: git diff <gate_base>. Test: <cmd>. Write docs/cto/results/G<n>.json.`
+      Add `Run the mutation check` if the gate is critical. Then run `cto-judge.mjs`.
+- [ ] **PASS:**
+  - Check ownership: `git diff --name-only <gate_base>` plus `git ls-files --others --exclude-standard` must stay
+    inside the gate's files. `docs/cto/` does not count.
+  - Run `cto-state.mjs G<n> pass`, add `G<n> PASS — <one line>` to `ledger.md`, and put the minors in
+    `techdebt.md`.
+  - `git rm` this gate's briefs and results, then commit `feat(G<n>): …`.
+- [ ] **FAIL:**
+  - First send the `failing` list to the worker that wrote the code, as a follow-up message. It still has the
+    context. Use `<refs>/fixer-prompt.md`.
+  - If that fails again, give it to a fresh worker with `model: "opus"`.
+  - If that fails too, rethink: split the task or re-brief it.
+  - Re-verify each time, overwriting `G<n>.json`.
+- [ ] Give the CEO one progress line, for example `G2/5 pass (11 min): sign-up and login work. Next: G3.`
+
+**Review.** Every 3–4 passed gates, and always before FINAL, start one checker with `model: "opus"`:
+`Follow <refs>/reviewer-prompt.md. Range: git diff <commit before the batch>..HEAD. Write docs/cto/results/REVIEW-<k>.json.`
+- Proven Critical and Important findings go to a fixer, keeping their ids `F1`….
+- Re-verify with `--carried`. A carried finding needs a regression test.
+- Minor findings go to `techdebt.md`.
+- Append `Checkpoint: next <gate>; open: <one line>` to `ledger.md`.
+
+**FINAL.** One checker verifies the whole branch: every spec goal as `GOAL#<n>` (`--expect GOAL:<n> --critical`),
+the full suite, the build and the main flow. If there is a UI, a second checker follows `<refs>/user-tester-prompt.md`.
+
+**Report.** Write `docs/cto/report.html` from `<refs>/report-template.html`, in the CEO's chat language:
+- what works and how to try it;
+- the tech stack;
+- a Mermaid architecture diagram;
+- known gaps, in plain words;
+- gates and rounds (never estimate tokens).
+
+Then delete `briefs/`, `results/` and the two scripts, keeping `gates.md`, `ledger.md`, `techdebt.md` and
+`report.html`. Tell the CEO in 5–8 lines.
+
+**Context.** Each of your turns re-reads your whole context. Keep agent replies short, and read result files only
+for the detail you need. Past about 150k tokens, write a `Checkpoint:` and tell the CEO to `/clear` and run
+`/cto-team:deliver <plan>` again.
+
+**Resume** (branch `cto/<plan-name>` exists):
 - Read `gates.md` and `ledger.md` from the last `Checkpoint:`.
-- For a gate in `running` with a dirty tree, run `git stash push -u -m "cto-team <gate> interrupted"`. Log the
-  stash ref in `ledger.md`, and list it in the report. Never apply a stash on your own.
-- Re-run that gate from step 2.2. Delete leftover briefs and result files of gates already in `pass`.
-
-## Files you own (in the project)
-`docs/cto/` and `docs/contract/`. Keep only what is still needed: briefs and results live only while their gate
-runs, and anything temporary is deleted as soon as it is used.
+- A gate in `running` with a dirty tree:
+  - Run `git stash push -u -m "cto-team <gate> interrupted"`.
+  - Log the stash ref and list it in the report. Never apply a stash yourself.
+  - Re-run that gate.
+- Delete leftover briefs and results of gates already in `pass`.

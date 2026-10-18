@@ -26,7 +26,7 @@ Trong Claude Code:
 | Verifier độc lập ở mọi gate | Agent viết test rồi tự báo "test pass" | Một agent riêng chứng minh từng tiêu chí nghiệm thu, chạy toàn bộ test suite, và phá một dòng code mà test phải bắt được |
 | Không test giả, không lỗi 500 | `assert True` lọt qua; input quá lớn làm app crash | Test giả làm gate fail; mọi con số đều có test tràn số (v0.1 crash với số tiền 20 chữ số; sửa từ v0.2) |
 | Opus review theo đợt | Lỗi nằm giữa các tính năng do người dùng tự tìm ra | Cứ 3–4 gate, Opus review cả đợt (tìm ra một race condition thật mà các kiểm tra theo từng gate bỏ sót) |
-| Tiết kiệm token | Agent "thành viên" sống lâu ngày càng phình to | Mỗi agent chạy một lần và bắt đầu gọn nhẹ; Sonnet làm phần lớn việc (context lúc khởi động 12k thay vì 42k; 0.9M thay vì 3.8M token mỗi agent) |
+| Tiết kiệm token | Agent "thành viên" sống lâu ngày càng phình to | Mỗi agent chỉ nhận một task và bắt đầu gọn nhẹ; Sonnet làm phần lớn việc (context lúc khởi động 12k thay vì 42k; 0.9M thay vì 3.8M token mỗi agent) |
 | ripgrep thay cho grep | grep đệ quy chậm, output nhiễu | Một hook hướng agent sang ripgrep (nhanh hơn, tôn trọng .gitignore) |
 | Làm tiếp sau khi reset | Context bị reset là phải làm lại hoặc mất việc | Trạng thái nằm trong `docs/cto/`; delivery tiếp tục từ checkpoint gần nhất |
 | Báo cáo người không code cũng đọc được | Một đoạn chat log dài | Một báo cáo HTML: cái gì chạy được, cách thử, tech stack, sơ đồ kiến trúc, những chỗ còn thiếu |
@@ -48,7 +48,7 @@ flowchart LR
 ## Hỏi đáp
 
 - **Có thay thế superpowers không?** Không. superpowers dùng để lên plan; cto-team lo phần giao việc và kiểm tra.
-- **Chi phí thế nào?** Mỗi agent chạy một lần và khởi động gọn, Sonnet làm phần lớn việc nên token được tiết kiệm.
+- **Chi phí thế nào?** Mỗi agent chỉ nhận một task và khởi động gọn, Sonnet làm phần lớn việc nên token được tiết kiệm.
 - **Không có Playwright MCP thì sao?** Vẫn chạy được; verifier dùng E2E test của project hoặc ghi rõ là `UNVERIFIED`.
 - **Nên chọn bao nhiêu worker?** Từ 1 đến 5 mỗi gate, mặc định 3.
 - **Việc nhỏ có nên dùng không?** Không cần. Từ 3 task trở xuống, không đụng tiền, đăng nhập hay ghi dữ liệu, CTO tự làm luôn rồi cho một checker kiểm: vài phút, không chạy cả quy trình.
@@ -75,4 +75,4 @@ Plugin không tự đổi settings của bạn. Nếu muốn, thêm vào `~/.cla
 
 ## Credits
 
-Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.5.3.
+Ý tưởng điều chỉnh từ [obra/superpowers](https://github.com/obra/superpowers). License MIT. Phiên bản 0.6.0.

@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Use when the user wants to turn an idea into a buildable plan with the cto-team and superpowers is not installed, or when they explicitly ask for "/cto-team:plan". You act as CTO interviewing a non-technical CEO, then write a spec and a gate-ready plan that /cto-team:deliver executes. If superpowers is installed and the user did not ask for this skill, use superpowers brainstorming + writing-plans instead.
+description: Use when the user explicitly asks for "/cto-team:plan", or wants to turn an idea into a buildable plan for the cto-team and superpowers is not installed. If superpowers is installed and the user did not ask for this skill, use superpowers brainstorming and writing-plans instead.
 ---
 
 # cto-team: plan

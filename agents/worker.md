@@ -1,6 +1,6 @@
 ---
 name: worker
-description: cto-team one-shot worker or fixer. Started by the cto-team CTO.
+description: cto-team worker or fixer. Started by the cto-team CTO.
 tools: Read, Write, Edit, Bash, PowerShell, Glob, Grep
 model: sonnet
 ---

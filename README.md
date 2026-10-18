@@ -6,7 +6,7 @@ A Claude Code plugin that turns your AI coding agent into a multi-agent team: a 
 
 ## Install
 
-Version 0.5.3. In Claude Code:
+Version 0.6.0. In Claude Code:
 
 ```
 /plugin marketplace add nhattrung0911/cto-team
@@ -26,7 +26,7 @@ Version 0.5.3. In Claude Code:
 | Blind verifier on every gate | "Tests pass", says the agent that wrote them | A separate agent proves every acceptance criterion, runs the full suite, and breaks one line the tests must catch |
 | No fake tests, no 500s | `assert True` slips through; huge input crashes | Fake tests fail the gate; every number gets an overflow test (v0.1 crashed on a 20-digit amount; fixed from v0.2) |
 | Opus batch review | Bugs across features are found by users | Every 3–4 gates Opus reviews the batch (found a real race condition the per-gate checks missed) |
-| Lean on tokens | Long-lived "member" agents grow huge | Every agent is one-shot and starts small; Sonnet does most of the work (12k vs 42k start context; 0.9M vs 3.8M tokens per agent) |
+| Lean on tokens | Long-lived "member" agents grow huge | Every agent gets one task and starts small; Sonnet does most of the work (12k vs 42k start context; 0.9M vs 3.8M tokens per agent) |
 | ripgrep instead of grep | Slow recursive grep, noisy output | A hook points agents to ripgrep (faster, respects .gitignore) |
 | Picks up after a reset | Context reset = redo or lost work | State lives in `docs/cto/`; delivery resumes from the last checkpoint |
 | Report a non-coder can read | A long chat log | One HTML report: what works, how to try it, tech stack, architecture diagram, known gaps |
@@ -50,7 +50,7 @@ flowchart LR
 ## FAQ
 
 - **Does it replace superpowers?** No. superpowers is optional and only helps with planning; `/cto-team:plan` works without it.
-- **What does it cost?** Every agent is one-shot and starts small, and Sonnet does most of the work. You choose the workers per gate.
+- **What does it cost?** Every agent gets one task and starts small, and Sonnet does most of the work. You choose the workers per gate.
 - **Can I use it without Playwright?** Yes. UI checks fall back to the project's E2E tests or are reported as `UNVERIFIED`.
 - **How many workers?** 1–5 per gate, default 3.
 - **Is it worth it for a tiny change?** No. For 3 tasks or fewer with no money, auth or data writes, the CTO builds it itself and has one checker verify it: minutes, not a full delivery.

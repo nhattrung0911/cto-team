@@ -11,7 +11,7 @@ const json = (p) => JSON.parse(read(p));
 test('manifest has name, version, description, license MIT', () => {
   const m = json('.claude-plugin/plugin.json');
   assert.equal(m.name, 'cto-team');
-  assert.equal(m.version, '0.5.3');
+  assert.equal(m.version, '0.6.0');
   assert.equal(m.license, 'MIT');
   assert.ok(m.description.length > 20);
   assert.equal(m.author.name, 'nhattrung0911');
@@ -143,16 +143,22 @@ test('lean plugin agents with role tool lists; the checker cannot edit', () => {
   assert.match(c, /^tools: .*mcp__playwright/m);
 });
 
-test('v0.5: the CTO leads with visible agents and keeps only the quality guardrails', () => {
+test('v0.6: the CTO leads visible agents; the skill keeps two iron rules, guardrails with reasons and exact scripts', () => {
+  const sk = read('skills/deliver/SKILL.md');
   has('skills/deliver/SKILL.md', [
-    'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background', 'default playbook, not a script',          // visible team the CTO leads
-    'cto-judge.mjs', 'independently verified', 'GAPS', 'UNPROVEN:', '--carried',      // nothing counts until judged
-    'shared resources run one at a time', 'its own port and output folder', 'once per verification', 'one owner per file',                        // no stepping on each other
-    'docs/contract/', 'test-policy.md', 'model: "opus"', 'REVIEW-<k>', 'GOAL#<n>',     // contract, tests, reviews, final
-    'how many sonnet workers', 'progress line', "delete that gate's briefs and result files", 'deleted as soon as it is used', 'Checkpoint:', '/clear', 'git stash push -u', 'cto-state.mjs',
+    'two iron rules', 'fresh checker', 'cto-judge.mjs', 'real tests only', '| thought | reality |',    // discipline + rationalizations
+    'why:', 'change the playbook freely', 'ruling:',                                                  // reasons, freedom
+    'cto-team:worker', 'cto-team:checker', 'agent map', 'in the background', 'follow-up message',      // visible team, fix by its author first
+    'shared resources run one at a time', 'its own port and', 'one owner per file',
+    'docs/contract/', 'model: "opus"', 'REVIEW-<k>', 'GOAL#<n>', '--carried', 'GAPS', 'UNPROVEN:',
+    '${CLAUDE_SKILL_DIR}', 'how many sonnet workers', 'progress line', 'checkpoint:', '/clear',
+    'git stash push -u', 'cto-state.mjs', 'clean as you go', "git rm` this gate's briefs",
   ]);
-  assert.ok(!/Workflow tool|gate\.js/.test(read('skills/deliver/SKILL.md')), 'v0.5 has no gate workflow');
-  has(REF + 'worker-prompt.md', ['never start a build', 'more than 3 times', 'CONTRACT:', 'quiet output']);
+  assert.ok(!/Workflow tool|gate\.js/.test(sk), 'no gate workflow');
+  const desc = sk.match(/\ndescription: (.*)/)[1];
+  assert.match(desc, /^Use when/, 'description says when to use it');
+  assert.ok(desc.length < 500 && !/verifier|workers/i.test(desc), 'description must not summarize the workflow');
+  has(REF + 'worker-prompt.md', ['never start a build', 'more than 3 times', 'CONTRACT:', 'quiet output', 'work as a fixer']);
   has(REF + 'verifier-prompt.md', ['assume the work is broken', 'hash-object', 'never git checkout', 'suite.cmd', 'you run alone', 'overflow', '5xx']);
   has(REF + 'reviewer-prompt.md', ['reproduce', 'overflow', 'anti-goal', '"findings"']);
 });
